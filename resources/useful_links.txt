@@ -1,0 +1,2 @@
+https://www.youtube.com/watch?v=mvZKu0DfFLQ
+	Introduction to threads, mutex_locks and race conditions in C, ELI5
