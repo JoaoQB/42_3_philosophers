@@ -1,6 +1,8 @@
 # 42_3_philosophers
 
-## Introduction to Threads, Mutex Locks, and Race Conditions in C, Explained Like I'm Five
+## Threads
+
+### Introduction to Threads, Mutex Locks, and Race Conditions in C, Explained Like I'm Five
 
 In computer science, threads are like separate paths within a program. Just like a group of friends can split up to do different tasks and then come back together, threads allow a program to do multiple things at once.
 
@@ -22,6 +24,20 @@ To use threads in C, we use a library called `<pthread.h>`. Here's a quick summa
 - Thread Termination: `pthread_exit`
 - Mutex Handling: `pthread_mutex_init`, `pthread_mutex_destroy`, `pthread_mutex_lock`, `pthread_mutex_unlock`
 - Condition Variable Handling: `pthread_cond_init`, `pthread_cond_destroy`, `pthread_cond_wait`, `pthread_cond_signal`, `pthread_cond_broadcast`
+
+```c
+pthread_create - int pthread_create(pthread_t *thread, const pthread_attr_t *attr, void *(*start_routine) (void *), void *arg);
+
+It takes 4 parameters:
+
+thread: A pointer to a pthread_t variable that will hold the ID of the newly created thread.
+
+attr: An optional pointer to a pthread_attr_t structure containing thread attributes. Thread attributes specify various properties of the new thread, such as a scheduling policy, stack size, or detached status. If NULL is passed, default attributes are passed.
+
+start_routine: A pointer to the function that the new thread will execute. This function must accept a single void* argument and return a void*.
+
+arg: An argument that will be passed to start_routine function when the new thread is created. This argument can be used to pass data or context information to the thread function.
+```
 
 Let's create a function to better illustrate threads.
 An analogy we can use is starbucks, where every worker is equivalent to a different thread. For example, a simple starbucks program:
@@ -115,7 +131,7 @@ While it appears that all baristas make coffee at the same time when executing o
 `Concurrent execution` involves tasks running independently and potentially interleaved on a single processing unit (e.g., CPU core).
 `Parallel execution` involves tasks running simultaneously on separate processing units (e.g., multiple CPU cores), achieving true simultaneous execution.
 
-## Data Races
+### Data Races
 
 A data race happens in concurrent programming, where two or more threads access a shared resource, like a variable or memory location, and at least one of those accesses is a write operation.
 If the accesses are not properly synchronized, the outcome of the program becomes unpredictable, as it depends on the timing of the thread's execution.
@@ -234,7 +250,7 @@ int	main(void)
 }
 ```
 
-## Process vs Thread
+### Process vs Thread
 
 	Definition:
 		Thread: A thread is the smallest unit of execution within a process. Multiple threads can exist within the same process and share the same memory space and resources.
@@ -259,3 +275,168 @@ int	main(void)
 In summary, threads are lightweight units of execution within a process that share resources and memory, while processes are independent instances of programs that run in separate memory spaces and communicate via IPC. Threads enable concurrent execution within a process, while processes provide isolation and independent execution of programs.
 
 Race conditions are intra-process things, not inter-process.
+
+## Deadlocks
+
+### Mexican Standoff
+
+A deadlock occurs when a process or thread enters a waiting stage because a requested system resource is held by another waiting process, which in turn is waiting for another resource held by another waiting process.
+
+As an analogy we can think of a deadlock as a mexican standoff. Two or more threads are unable to continue their execution because they're each waiting for the other to release a resource.
+
+Let's create a function to exemplify.
+
+```c
+#include <stdio.h>
+#include <pthread.h>
+#include <string.h>
+
+// GUNS
+pthread_mutex_t ugly_gun = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t bad_gun = PTHREAD_MUTEX_INITIALIZER;
+
+typedef struct	s_cowboy
+{
+	char		*name;
+	pthread_t	thread;
+}	t_cowboy;
+
+void	*action(void *data)
+{
+	t_cowboy	cowboy;
+
+	cowboy = *(t_cowboy *)data;
+	if (!strcmp(cowboy.name, "ugly"))
+		pthread_mutex_lock(&ugly_gun);
+	else
+		pthread_mutex_lock(&bad_gun);
+	printf("%s has taken his own gun\n", cowboy.name);
+
+	// I wanna take the other gun
+	// DEADLOCK
+	if (!strcmp(cowboy.name, "ugly"))
+		pthread_mutex_lock(&bad_gun);
+	else
+		pthread_mutex_lock(&ugly_gun);
+
+	return NULL;
+}
+
+int	main(void)
+{
+	t_cowboy	ugly = {"ugly"};
+	t_cowboy	bad = {"bad"};
+
+	pthread_create(&ugly.thread, NULL, action, &ugly);
+	pthread_create(&bad.thread, NULL, action, &bad);
+
+	pthread_join(ugly.thread, NULL);
+	pthread_join(bad.thread, NULL);
+}
+```
+
+Let's breakdown the `cowboy = *(t_cowboy *)data;` line in the action function from above.
+
+Casting:
+	`cowboy = *(t_cowboy *)data;`: This part of the expression casts the `data` pointer from a void* type to a t_cowboy type.
+		data is declared as a pointer to *void, which means it can point to any type of data. However in this context we know that data actually points to a t_cowboy object.
+		By casting data to `*(t_cowboy *)` we inform the compiler we are treating data as a pointer to a t_cowboy object.
+
+Dereferencing:
+	`*(t_cowboy *)data;`: This part of the expression dereferences the pointer obtained from the casting.
+		*(...) is the dereference operator in C. It is used to access the value stored at the memory location pointed by a pointer.
+		(t_cowboy *)data casts data to a t_cowboy* pointer. This means we're treating data as a pointer to a t_cowboy object.
+		*(t_cowboy *)data dereferences this pointer, accessing the t_cowboy object it points to.
+
+So, in summary, `(t_cowboy *) data` casts the `void*` pointer `data` to a `t_cowboy*` pointer, and `*(t_cowboy *) data` dereferences this pointer, allowing us to access the `t_cowboy` object it points to. This allow us to retrieve the `t_cowboy` object from the `void*` pointer `data` and assign it to the `cowboy` variable.
+
+If we run this program we either get:
+
+ugly has taken his own gun
+bad has taken his own gun
+
+or:
+
+ugly has taken his own gun
+
+After acquiring its own mutex, each thread tries to acquire the other mutex as well. However, the other mutex is already locked by the other thread. Hence, both threads get blocked waiting for the other mutex to be released. This leads to a deadlock situation where neither thread can proceed.
+Therefore the second part of our code cannot be executed, hence we only see the first part and it gets stuck in a deadlock "infinite loop".
+
+### Synchronization
+
+```c
+#include <stdio.h>
+#include <pthread.h>
+#include <string.h>
+#include <wait.h>
+#include <time.h>
+#include <unistd.h>
+#include <stdlib.h>
+
+#define ANSI_COLOR_RESET   "\x1b[0m"
+#define ANSI_COLOR_RED     "\x1b[31m"
+#define ANSI_COLOR_GREEN   "\x1b[32m"
+#define ANSI_COLOR_YELLOW  "\x1b[33m"
+#define ANSI_COLOR_BLUE    "\x1b[34m"
+#define ANSI_COLOR_MAGENTA "\x1b[35m"
+#define ANSI_COLOR_CYAN    "\x1b[36m"
+#define ANSI_BOLD          "\x1b[1m"
+#define ANSI_UNDERLINE     "\x1b[4m"
+
+// GUNS
+pthread_mutex_t ugly_gun = PTHREAD_MUTEX_INITIALIZER;
+pthread_mutex_t bad_gun = PTHREAD_MUTEX_INITIALIZER;
+
+typedef struct	s_cowboy
+{
+	char			*name;
+	unsigned long	reaction_time;
+	pthread_t		thread;
+}	t_cowboy;
+
+void	*action(void *data)
+{
+	t_cowboy	cowboy;
+
+	cowboy = *(t_cowboy *)data;
+	// How fast the cowboy is
+	printf("%s reaction time "ANSI_BOLD ANSI_COLOR_CYAN"%lu\n"ANSI_COLOR_RESET,
+		cowboy.name,
+		cowboy.reaction_time);
+	usleep(cowboy.reaction_time);
+
+	if (!strcmp(cowboy.name, "ugly"))
+		pthread_mutex_lock(&ugly_gun);
+	else
+		pthread_mutex_lock(&bad_gun);
+	printf("%s has taken his own gun\n", cowboy.name);
+
+	// I wanna take the other gun
+	// DEADLOCK
+	if (!strcmp(cowboy.name, "ugly"))
+		pthread_mutex_lock(&bad_gun);
+	else
+		pthread_mutex_lock(&ugly_gun);
+
+	// The killer will reach this position
+	printf(ANSI_COLOR_RED"%s killed the other\n"ANSI_COLOR_RESET, cowboy.name);
+	exit(EXIT_SUCCESS);
+
+	return NULL;
+}
+
+int	main(void)
+{
+	srand((time(NULL)) * getpid());
+	t_cowboy	ugly = {"ugly", rand() % 10000};
+	t_cowboy	bad = {"bad", rand() % 10000};
+
+	pthread_create(&ugly.thread, NULL, action, &ugly);
+	pthread_create(&bad.thread, NULL, action, &bad);
+
+	pthread_join(ugly.thread, NULL);
+	pthread_join(bad.thread, NULL);
+}
+```
+
+ANSI escape sequences allow you to control text formatting, color, and other display options in terminal output.

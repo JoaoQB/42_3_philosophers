@@ -1,2 +1,31 @@
-https://www.youtube.com/watch?v=mvZKu0DfFLQ
+https://www.youtube.com/watch?v=mvZKu0DfFLQ | DONE
 	Introduction to threads, mutex_locks and race conditions in C, ELI5
+
+https://www.youtube.com/watch?v=rFYYifVj5gs | DONE
+	 What is a deadlock? C code ELI5
+
+https://medium.com/@jalal92/deadlocks-b059eed3e6c3 | DONE
+	Deadlocks AKA Mexican Standoffs
+
+https://www.youtube.com/watch?v=_ruovgwXyYs
+	 Deadlock 3: Dining Philosophers
+
+https://www.youtube.com/playlist?list=PLfqABt5AS4FmuQf70psXrsMLEDQXNkLq2
+	Codevault Unix Threads in C
+
+https://pages.mtu.edu/~shene/NSF-3/e-Book/index.html
+	Multithreaded Programming with ThreadMentor: A Tutorial
+
+Solutions:
+
+https://eng.libretexts.org/Courses/Delta_College/Operating_System:_The_Basics/06:_Deadlock/6.4:_Dining_Philosopher_Problem#:~:text=Arbitrator%20solution,computers%20competing%20for%20access
+	Dining Philosopher Problem
+
+https://f0rkr.github.io/dining-philosophers-problem/
+	Dining philosophers problem
+
+https://www.stolaf.edu/people/rab/pdc/text/dpsolns.htm
+	 Solutions to the Dining Philosopher problem
+
+https://medium.com/@ridwaneelfilali/philosophers-the-dinning-problem-8ea3c0fc8cc7
+	Philosophers: The dinning problem
