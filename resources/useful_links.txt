@@ -7,6 +7,9 @@ https://www.youtube.com/watch?v=rFYYifVj5gs | DONE
 https://medium.com/@jalal92/deadlocks-b059eed3e6c3 | DONE
 	Deadlocks AKA Mexican Standoffs
 
+https://medium.com/@jalal92/the-dining-philosophers-7157cc05315
+	Oceano The Dining Philosophers
+
 https://www.youtube.com/watch?v=_ruovgwXyYs
 	 Deadlock 3: Dining Philosophers
 
@@ -16,16 +19,22 @@ https://www.youtube.com/playlist?list=PLfqABt5AS4FmuQf70psXrsMLEDQXNkLq2
 https://pages.mtu.edu/~shene/NSF-3/e-Book/index.html
 	Multithreaded Programming with ThreadMentor: A Tutorial
 
+https://www.codequoi.com/en/threads-mutexes-and-concurrent-programming-in-c/ | DONE
+	Threads, Mutexes and Concurrent Programming in C
+
+https://nafuka11.github.io/philosophers-visualizer/
+	Philosophers visualizer
+
 Solutions:
 
-https://eng.libretexts.org/Courses/Delta_College/Operating_System:_The_Basics/06:_Deadlock/6.4:_Dining_Philosopher_Problem#:~:text=Arbitrator%20solution,computers%20competing%20for%20access
-	Dining Philosopher Problem
+https://eng.libretexts.org/Courses/Delta_College/Operating_System:_The_Basics/06:_Deadlock/6.4:_Dining_Philosopher_Problem#:~:text=Arbitrator%20solution,computers%20competing%20for%20access | DONE
+	Dining philosophers Problem: Resource Hierarchy solution
 
-https://f0rkr.github.io/dining-philosophers-problem/
-	Dining philosophers problem
+https://f0rkr.github.io/dining-philosophers-problem/ | DONE
+	Dining philosophers problem: Delay in Eating solution
 
-https://www.stolaf.edu/people/rab/pdc/text/dpsolns.htm
-	 Solutions to the Dining Philosopher problem
+https://www.stolaf.edu/people/rab/pdc/text/dpsolns.htm | DONE
+	Dining philosophers problem: Waiter/Chandy-Misra solution
 
-https://medium.com/@ridwaneelfilali/philosophers-the-dinning-problem-8ea3c0fc8cc7
-	Philosophers: The dinning problem
+https://medium.com/@ridwaneelfilali/philosophers-the-dinning-problem-8ea3c0fc8cc7 | DONE
+	Dining philosophers problem: Synchronization solution

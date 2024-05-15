@@ -440,3 +440,105 @@ int	main(void)
 ```
 
 ANSI escape sequences allow you to control text formatting, color, and other display options in terminal output.
+
+
+## Dining Philosophers Problem
+
+### Objectives and Solutions
+
+The Dining Philosophers problem is a classic concurrency problem that illustrates issues with resource sharing and deadlock in concurrent programming.
+It presents a scenario where N philosophers are seated around a circular table, with a bowl of spaghetti and one fork between each pair of philosophers.
+Each philosopher can be in one of three states: eating, sleeping, or thinking. Philosophers are unware of each other's statuses.
+The goal is to simulate the three states of philosophers and log any changes in status, including when a philosopher dies.
+
+The program requires five arguments:
+
+	number_of_philosophers (nop): The number of philosophers seated around the table, which also corresponds to the number of forks available.
+
+	time_to_die (ttd): The time limit in milliseconds. If a philosopher does not start eating within this time after their last meal or the beginning of the simulation, they die.
+
+	time_to_eat (tte): The time it takes in milliseconds for a philosopher to eat. During this time, the philosopher needs to hold onto both forks.
+
+	time_to_sleep (tts): The time in milliseconds that the philosopher spends sleeping.
+
+	number_of_times_each_philosopher_must_eat: (Optional) Specifies how many times each philosopher must eat before the simulation stops. If not specified, the simulation continues until a philosopher dies.
+
+Philosophers can eat if they can pick up the two adjacentforks, but only one fork may be picked up by any one of its adjacent philosophers to avoid potential issues.
+This problem highlights challenges related to concurrency control, resource allocation and synchronization in multi-threaded or distributed systems. There are various solutions, such as:
+
+	Resource hierarchy solution (https://eng.libretexts.org/Courses/Delta_College/Operating_System:_The_Basics/06:_Deadlock/6.4:_Dining_Philosopher_Problem#:~:text=Arbitrator%20solution,computers%20competing%20for%20access)
+
+	Delay in eating solution (https://f0rkr.github.io/dining-philosophers-problem/)
+
+	Synchronization solution (https://medium.com/@ridwaneelfilali/philosophers-the-dinning-problem-8ea3c0fc8cc7)
+
+	Waiter/Chandy-Misra solution (https://www.stolaf.edu/people/rab/pdc/text/dpsolns.htm)
+
+	Specific Order of Fork Pickup solution
+
+Here are some advantages and disadvantages:
+
+Specific Order of Fork Pickup:
+
+	Advantages:
+
+		Simple to implement: By enforcing a specific order of picking up forks, you can easily prevent deadlock without complex synchronization mechanisms.
+		Deadlock prevention: Ensure that philosophers never reach a circular wait condition, preventing deadlock from occurring.
+
+	Disadvantages
+
+		Potential starvation: Philosophers may have to wait longer to acquire both forks if they must wait for others to release them in a specific order, leading to potential starvation.
+		Less flexibility: Philosophers are constrained to a specific order of actions, which might not be optimal for all scenarios.
+
+Delay in Picking Up Forks:
+
+	Advantages:
+
+		Fairness: Philosophers have an equal chance of acquiring the required forks, reducing the likehood of starvation.
+		Simple Implementation: Adding a delay before attempting to acquire a fork is straightforward.
+
+	Disadvantages
+
+		Increased latency: Introducing delays can slow down the overall execution of the program, affecting performance.
+		Potential inefficiency: Philosophers may waste time waiting even when forks are available, leading to suboptimal resource utilization.
+
+Synchronization Mechanisms:
+
+	Advantages:
+
+		Fine-grained control: Allows precise coordination between threads, ensuring that resorces are acquired and released in a synchronized manner.
+		Optimal resource utilization: Can minimize waiting time and maximize concurrency by efficiently managing resource access.
+
+	Disadvantages
+
+		Complexity: Implementing synchronization mechanisms such as mutexes, semaphores or monitors can be complex and error-prone.
+		Deadlock risk: Incorrect use of synchronization primitives can lead to deadlock or other concurrency issues.
+
+
+Monitoring Thread:
+
+	Advantages:
+
+		Real-time monitoring: Allows continuous monitoring of the system's state, enabling early detection and resolution of potential issues.
+		Dynamic adjustements: Can dynamically adjust system parameters or interven when necessary to prevent deadlock or starvation.
+
+	Disadvantages
+
+		Overhead: Introducing a monitoring thread adds additional overhead to the system, potentially impacting performance.
+		Complexity: Implementing a monitoring thread and associated logic can be complex, requiring careful design and testing.
+
+
+### The Dining Philosophers by Oceano
+
+Libraries needed:
+
+```c
+#include <stdio.h>   // printf
+#include <stdlib.h>  // malloc, free
+#include <unistd.h>  // write, usleep
+#include <stdbool.h> // booleans
+#include <pthread.h> // mutex: init destroy lock unlock
+					 // threads: create join detach
+#include <sys/time.h>// gettimeofday
+#include <limits.h>  // INT_MAX
+```
