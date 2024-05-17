@@ -542,3 +542,35 @@ Libraries needed:
 #include <sys/time.h>// gettimeofday
 #include <limits.h>  // INT_MAX
 ```
+
+Every philo is a struct.
+
+```c
+int philo_id
+long meals_eaten
+bool is_full
+long last_meal_time
+*left_fork
+*right_fork
+pthread_t thread_id
+```
+
+fork is a mutex.
+
+```c
+t_mtx fork
+int fork_id
+```
+
+table.
+
+```c
+int philo_nbr
+int time_to_die
+int time_to_eat
+int time_to_sleep
+int nbr_max_meals
+t_fork forks
+t_philo philos
+```
+

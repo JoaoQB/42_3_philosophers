@@ -1,0 +1,151 @@
+# **************************************************************************** #
+#                                                                              #
+#                                                         :::      ::::::::    #
+#    workflow.txt                                       :+:      :+:    :+:    #
+#                                                     +:+ +:+         +:+      #
+#    By: jqueijo- <jqueijo-@student.42.fr>          +#+  +:+       +#+         #
+#                                                 +#+#+#+#+#+   +#+            #
+#    Created: 2024/05/17 12:11:51 by jqueijo-          #+#    #+#              #
+#    Updated: 2024/05/17 12:11:55 by jqueijo-         ###   ########.fr        #
+#                                                                              #
+# **************************************************************************** #
+
+Parse ->
+    nbr of philos
+    time to die
+    time to eat
+    time to sleep
+    nbr of meals (user may or may not define)
+ - input for any argument must be a digit, > 0, <= int max;
+ - if argument str has more than 10 digits than it's for sure bigger than int max;
+ - exit() is likely a forbidden function in this project, consider building your error handling logic around return()
+    static int  validate_arg(char *str)
+    {
+        int i;
+        if (!str)
+            return (1);
+        i = 0;
+        while (str[i])
+        {
+            if (!ft_isdigit(str[i]))
+                return (0);
+            if (i > 10)
+                return (0);
+            i++;
+        }
+        return (1);
+    }
+ - last argument (nbr of meals) is optional for the user,
+    if no value is given for this argument consider setting it to -1 or 0
+    so you can handle it down the line.
+Initialze simulation values ->
+    consider using a flag so that philosophers can know if the simulation on goin or not.
+    no messages should be printed after a philospher dies, if one dies the simulation is over.
+    structs examples;
+    - a dinning table (simulation manager).
+            typedef struct s_sim
+            {
+                t_philo         *philosophers;
+                t_fork          *forks;
+                int             seats;
+                int             goal;
+                int             served;
+                int             time_to_die;
+                int             time_to_eat;
+                int             time_to_sleep;
+                long            start;
+                bool            ended;
+                pthread_mutex_t mtx;
+            }   t_sim;
+    - philosopher
+            typedef struct s_philo
+            {
+                pthread_t           th_id;
+                int                 index;
+                int                 meals;
+                int                 limit;
+                int                 lspan;
+                long                last_meal;
+                bool                full;
+                bool                dead;
+                t_fork              *left;
+                t_fork              *right;
+                t_sim               *sim;
+                pthread_mutex_t     mtx;
+            }   t_philo;
+    - fork/spoon
+        typedef struct s_fork
+        {
+            int             index;
+            pthread_mutex_t mtx;
+        }   t_fork;
+Create an array/list of philosophers
+Create an array/list of forks
+    init and assign forks to each philo
+        while (i < nbr of philos)
+            pthread_mutex_init(mutex[i], NULL);
+            philo[i].mutex = mutex[i]; (assign left hand or right hand philosopher pointer to a fork) (no sharing!)
+    init threads and assign eat/sleep/think routine to each thread;
+        while (i < nbr of philos)
+            pthread_create(philo[i].th_id, NULL, ROUTINE, &philo[i]);
+    set the simulation start time (research gettimeofday() and the timeval struct)
+        long    get_time(void)
+        {
+            struct timeval  tv;
+            if (gettimeofday(&tv, NULL))
+                ft_error("gettimeofday() failed.");
+            return ((tv.tv_sec * (long)1000) + (tv.tv_usec / 1000)); (convert micro to mili secs)
+        }
+    while (i < nbr of philos)
+        pthread_join(philo[i], NULL);
+Routine ->
+    make a get_value() function with a mutex (so you can read variables without data races, props Oceano)
+        bool    get_bool(pthread_mutex_t *mtx, bool *value)
+        {
+            bool    ret;
+            pthread_mutex_lock(mtx);
+            ret = *value;
+            pthread_mutex_unlock(mtx);
+            return (ret);
+        }
+    make a print function protected by a mutex and with timestamps;
+        void    print_status(t_philo *philo, char *status)
+        {
+            long    elapsed;
+            elapsed = get_time() - philo->sim->start;
+            if (get_bool(&philo->sim->mtx, &philo->sim->ended))
+                return ;
+            pthread_mutex_lock(&philo->sim->mtx);
+            printf(W"%ld"RST"  "C"%d"RST" %s\n", elapsed, philo->index, status);
+            pthread_mutex_unlock(&philo->sim->mtx);
+        }
+    make a more accurate sleep function
+        void    ft_sleep(long usecs)
+        {
+            long    start;
+            start = get_time();
+            while ((get_time() - start) < usecs)
+                usleep(usecs / 10);
+            return ;
+        }
+    handle single thread case. (leave this for last)
+    when a philo thread starts it's routine should roughly be ->
+            mtx lock
+            philo->last_meal = get_time();
+            mtx unlock
+            while (1)
+            {
+                if (is full?)
+                    break ;
+                if (simulation ended?)
+                    break ;
+                eat
+                rest
+                think
+            }
+            return (NULL);
+    consider using a monitor thread to check if a philosopher has died,
+    otherwise each philosopher has to checkhimself before any move;
+        if last_meal_time > time_to_die ... he died.
+    so philos can die while thinking or sleeping, or maybe even eating,
+    a dead message cannot be delayed more than 10ms.
