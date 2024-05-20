@@ -574,3 +574,19 @@ t_fork forks
 t_philo philos
 ```
 
+gettimeofday(): int	gettimeofday(struct timeval *tv, struct timezone *tz).
+
+The use of timezone is obsolete, the tz argument should normally be set to NULL.
+
+tv argument is a struct timeval:
+
+```c
+struct timeval {
+	time_t	tv_sec; // Seconds
+	suseconds_t	tv_usec; // Microseconds
+};
+```
+
+It returns 0 for success, or -1 for failure.
+
+1 second is 1000 miliseconds, 1 milisecond is 1000 microseconds.

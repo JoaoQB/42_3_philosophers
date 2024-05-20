@@ -6,7 +6,7 @@
 #    By: jqueijo- <jqueijo-@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/05/17 12:19:57 by jqueijo-          #+#    #+#              #
-#    Updated: 2024/05/18 14:37:38 by jqueijo-         ###   ########.fr        #
+#    Updated: 2024/05/20 11:22:33 by jqueijo-         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,6 +16,9 @@ SRC = main.c \
 	parsing.c \
 	string_utils.c \
 	init.c \
+	dining.c \
+	utils.c \
+	routine.c \
 	# cleanup.c \
 
 CC = cc

@@ -6,7 +6,7 @@
 /*   By: jqueijo- <jqueijo-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/17 15:29:41 by jqueijo-          #+#    #+#             */
-/*   Updated: 2024/05/18 15:45:14 by jqueijo-         ###   ########.fr       */
+/*   Updated: 2024/05/20 11:20:42 by jqueijo-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,7 +35,7 @@ static void	philo_init(t_table *table)
 	t_philo	*philo;
 
 	i = -1;
-	while(++i < table->seats)
+	while (++i < table->seats)
 	{
 		philo = table->philosophers + i;
 		philo->index = i + 1;
@@ -47,13 +47,14 @@ static void	philo_init(t_table *table)
 		philo->time_to_eat = table->time_to_eat;
 		philo->time_to_sleep = table->time_to_sleep;
 		philo->meals_limit = table->meals_limit;
+		philo->table_mtx = table->mtx;
+		philo->ended = table->ended;
 		assign_forks(philo, table->forks, i);
-
 		printf("Philosopher %d is at position %d\n", philo->index, i);
 		printf("Philosopher %d has right fork %d and left fork %d\n",
-				philo->index,
-				philo->righ_fork->index,
-				philo->left_fork->index);
+			philo->index,
+			philo->righ_fork->index,
+			philo->left_fork->index);
 	}
 }
 
@@ -63,9 +64,9 @@ static int	init_forks(t_table *table)
 	int	j;
 
 	i = -1;
-	while(++i < table->seats)
+	while (++i < table->seats)
 	{
-		if(pthread_mutex_init(&table->forks[i].mtx, NULL) != 0)
+		if (pthread_mutex_init(&table->forks[i].mtx, NULL) != 0)
 		{
 			j = -1;
 			while (++j < i)
@@ -82,19 +83,19 @@ int	init_dinner(t_table *table)
 	table->ended = false;
 	table->philosophers = malloc(sizeof(t_philo) * table->seats);
 	if (!table->philosophers)
-		return 1;
+		return (1);
 	table->forks = malloc(sizeof(t_fork) * table->seats);
 	if (!table->forks)
 	{
 		free(table->philosophers);
-		return 1;
+		return (1);
 	}
 	if (!init_forks(table))
 	{
 		free(table->philosophers);
 		free(table->forks);
-		return 1;
+		return (1);
 	}
 	philo_init(table);
-	return 0;
+	return (0);
 }
