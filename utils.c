@@ -6,18 +6,22 @@
 /*   By: jqueijo- <jqueijo-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/20 09:30:42 by jqueijo-          #+#    #+#             */
-/*   Updated: 2024/05/20 11:37:47 by jqueijo-         ###   ########.fr       */
+/*   Updated: 2024/05/20 20:22:51 by jqueijo-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
-void	ft_sleep(long usecs)
+void	ft_sleep(long usecs, t_table *table)
 {
 	long	start;
 	start = get_time();
 	while (get_time() - start < usecs)
+	{
+		if (get_bool(&table->mtx, &table->ended))
+			break ;
 		usleep(usecs / 10);
+	}
 	return ;
 }
 
@@ -25,15 +29,22 @@ void	print_status(t_philo *philo, char *status)
 {
 	long	elapsed;
 
-	elapsed = get_time() - philo->start_time;
-	if (get_bool(&philo->table_mtx, &philo->ended))
+	elapsed = get_time() - philo->table->start_time;
+	if (get_bool(&philo->philo_mtx, &philo->table->ended))
 		return ;
-	pthread_mutex_lock(&philo->table_mtx);
-	printf(WHITE"%ld"RESET  BLUE"%d"RESET" %s\n", elapsed, philo->index, status);
-	pthread_mutex_unlock(&philo->table_mtx);
+	pthread_mutex_lock(&philo->table->write_mtx);
+	printf(WHITE"%ld"RESET  BLUE" %d"RESET" %s\n", elapsed, philo->index, status);
+	pthread_mutex_unlock(&philo->table->write_mtx);
 }
 
-bool	get_bool(pthread_mutex_t *mtx, bool *value)
+void	set_bool(t_mtx *mtx, bool *dest, bool value)
+{
+	pthread_mutex_lock(mtx);
+	*dest = value;
+	pthread_mutex_unlock(mtx);
+}
+
+bool	get_bool(t_mtx *mtx, bool *value)
 {
 	bool	ret;
 

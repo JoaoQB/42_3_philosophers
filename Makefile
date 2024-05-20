@@ -6,7 +6,7 @@
 #    By: jqueijo- <jqueijo-@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/05/17 12:19:57 by jqueijo-          #+#    #+#              #
-#    Updated: 2024/05/20 11:22:33 by jqueijo-         ###   ########.fr        #
+#    Updated: 2024/05/20 20:18:38 by jqueijo-         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -22,7 +22,8 @@ SRC = main.c \
 	# cleanup.c \
 
 CC = cc
-CFLAGS =
+CFLAGS = -Wall -Werror -Wextra -O3
+SANITIZER = -g -fsanitize=thread
 
 OBJ = $(SRC:.c=.o)
 
@@ -37,8 +38,8 @@ clean:
 fclean: clean
 	rm -f $(NAME)
 
-real: CFLAGS += -Wall -Werror -Wextra -O3 #DON'T FORGET TO CHANGE
-real: re
+sanitize: CFLAGS += $(SANITIZER)
+sanitize: re
 
 re: fclean all
 

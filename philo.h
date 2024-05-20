@@ -6,7 +6,7 @@
 /*   By: jqueijo- <jqueijo-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/17 12:08:45 by jqueijo-          #+#    #+#             */
-/*   Updated: 2024/05/20 11:37:09 by jqueijo-         ###   ########.fr       */
+/*   Updated: 2024/05/20 19:19:10 by jqueijo-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -29,38 +29,44 @@
 # define WHITE   "\033[37m"
 # define BLUE    "\033[34m"
 
+typedef struct s_table	t_table;
+
+typedef pthread_mutex_t	t_mtx;
 
 typedef struct s_fork
 {
-	pthread_mutex_t	mtx;
+	t_mtx	mtx;
 	int				index;
 }	t_fork;
 
 typedef struct s_philo
 {
 	pthread_t		thread_id;
+	t_table			*table;
 	t_fork			*left_fork;
-	t_fork			*righ_fork;
-	pthread_mutex_t	table_mtx;
+	t_fork			*right_fork;
+	t_mtx			philo_mtx;
+	// t_mtx			write_mtx;
 	int				index;
 	int				meals_eaten;
 	long			last_meal_time;
 	bool			is_full;
 	bool			dead;
-	int				seats;
-	int				time_to_die;
-	int				time_to_eat;
-	int				time_to_sleep;
 	int				meals_limit;
-	long			start_time;
-	bool			ended;
+	// int				seats;
+	// int				time_to_die;
+	// int				time_to_eat;
+	// int				time_to_sleep;
+	// long			start_time;
+	// bool			ended;
 }	t_philo;
 
-typedef struct s_table
+struct s_table
 {
-	t_philo			*philosophers;
+	t_philo			*philos;
 	t_fork			*forks;
-	pthread_mutex_t	mtx;
+	t_mtx			mtx;
+	t_mtx			write_mtx;
 	int				seats;
 	int				time_to_die;
 	int				time_to_eat;
@@ -68,7 +74,7 @@ typedef struct s_table
 	int				meals_limit;
 	long			start_time;
 	bool			ended;
-}	t_table;
+};
 
 /* parsing.c */
 int		parse_input(char **argv, t_table *table);
@@ -88,9 +94,10 @@ void	*routine(void *data);
 
 /* utils.c */
 long	get_time(void);
-bool	get_bool(pthread_mutex_t *mtx, bool *value);
-void	print_status(t_table *table, char *status);
-void	ft_sleep(long usecs);
+bool	get_bool(t_mtx *mtx, bool *value);
+void	set_bool(t_mtx *mtx, bool *dest, bool value);
+void	print_status(t_philo *philo, char *status);
+void	ft_sleep(long usecs, t_table *table);
 
 /* cleanup.c */
 

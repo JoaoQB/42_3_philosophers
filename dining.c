@@ -6,7 +6,7 @@
 /*   By: jqueijo- <jqueijo-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/18 15:48:41 by jqueijo-          #+#    #+#             */
-/*   Updated: 2024/05/20 11:46:34 by jqueijo-         ###   ########.fr       */
+/*   Updated: 2024/05/20 18:15:35 by jqueijo-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,7 +19,7 @@ static int	create_threads(t_table *table)
 	t_philo	*philo;
 	int		i;
 
-	philo = table->philosophers;
+	philo = table->philos;
 	i = -1;
 	while (++i < table->seats)
 	{
@@ -37,7 +37,7 @@ static int	join_threads(t_table *table)
 	t_philo	*philo;
 	int		i;
 
-	philo = table->philosophers;
+	philo = table->philos;
 	i = -1;
 	while (++i < table->seats)
 	{
@@ -59,7 +59,6 @@ int	run_dinner(t_table *table)
 	if (create_threads(table) == -1)
 		return (1);
 	table->start_time = get_time();
-	table->philosophers->start_time = get_time();
 	if (table->start_time == -1)
 		return (1);
 	printf("Dinner started at: %ld miliseconds.\n", table->start_time);

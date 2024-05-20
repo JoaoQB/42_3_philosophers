@@ -6,7 +6,7 @@
 /*   By: jqueijo- <jqueijo-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/18 13:07:47 by jqueijo-          #+#    #+#             */
-/*   Updated: 2024/05/20 11:49:12 by jqueijo-         ###   ########.fr       */
+/*   Updated: 2024/05/20 19:27:57 by jqueijo-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,38 +30,44 @@
 # define WHITE   "\033[37m"
 # define BLUE    "\033[34m"
 
+typedef struct s_table	t_table;
+
+typedef pthread_mutex_t	t_mtx;
 
 typedef struct s_fork
 {
-	pthread_mutex_t	mtx;
+	t_mtx	mtx;
 	int				index;
 }	t_fork;
 
 typedef struct s_philo
 {
 	pthread_t		thread_id;
+	t_table			*table;
 	t_fork			*left_fork;
-	t_fork			*righ_fork;
-	pthread_mutex_t	table_mtx;
+	t_fork			*right_fork;
+	t_mtx			philo_mtx;
+	// t_mtx			write_mtx;
 	int				index;
 	int				meals_eaten;
 	long			last_meal_time;
 	bool			is_full;
 	bool			dead;
-	int				seats;
-	int				time_to_die;
-	int				time_to_eat;
-	int				time_to_sleep;
 	int				meals_limit;
-	long			start_time;
-	bool			ended;
+	// int				seats;
+	// int				time_to_die;
+	// int				time_to_eat;
+	// int				time_to_sleep;
+	// long			start_time;
+	// bool			ended;
 }	t_philo;
 
-typedef struct s_table
+struct s_table
 {
-	t_philo			*philosophers;
+	t_philo			*philos;
 	t_fork			*forks;
-	pthread_mutex_t	mtx;
+	t_mtx			mtx;
+	t_mtx			write_mtx;
 	int				seats;
 	int				time_to_die;
 	int				time_to_eat;
@@ -69,7 +75,7 @@ typedef struct s_table
 	int				meals_limit;
 	long			start_time;
 	bool			ended;
-}	t_table;
+};
 
 /* parsing.c */
 int		parse_input(char **argv, t_table *table);
@@ -89,23 +95,22 @@ void	*routine(void *data);
 
 /* utils.c */
 long	get_time(void);
-bool	get_bool(pthread_mutex_t *mtx, bool *value);
-void	print_status(t_table *table, char *status);
-void	ft_sleep(long usecs);
+bool	get_bool(t_mtx *mtx, bool *value);
+void	set_bool(t_mtx *mtx, bool *dest, bool value);
+void	print_status(t_philo *philo, char *status);
+void	ft_sleep(long usecs, t_table *table);
 
 /* cleanup.c */
 
 #endif
 
 /* One page only, dining.c */
-// static void	*monitor_philos(t_table *table)
-
 static int	create_threads(t_table *table)
 {
 	t_philo	*philo;
 	int		i;
 
-	philo = table->philosophers;
+	philo = table->philos;
 	i = -1;
 	while (++i < table->seats)
 	{
@@ -123,7 +128,7 @@ static int	join_threads(t_table *table)
 	t_philo	*philo;
 	int		i;
 
-	philo = table->philosophers;
+	philo = table->philos;
 	i = -1;
 	while (++i < table->seats)
 	{
@@ -145,7 +150,6 @@ int	run_dinner(t_table *table)
 	if (create_threads(table) == -1)
 		return (1);
 	table->start_time = get_time();
-	table->philosophers->start_time = get_time();
 	if (table->start_time == -1)
 		return (1);
 	printf("Dinner started at: %ld miliseconds.\n", table->start_time);
@@ -159,44 +163,51 @@ static void	assign_forks(t_philo *philo, t_fork *forks, int position)
 {
 	int	philo_nbr;
 
-	philo_nbr = philo->seats;
+	philo_nbr = philo->table->seats;
 	if (philo->index % 2 == 0)
 	{
 		philo->left_fork = &forks[position];
-		philo->righ_fork = &forks[(position + 1) % philo_nbr];
+		philo->right_fork = &forks[(position + 1) % philo_nbr];
 	}
 	else
 	{
 		philo->left_fork = &forks[(position + 1) % philo_nbr];
-		philo->righ_fork = &forks[position];
+		philo->right_fork = &forks[position];
 	}
 }
 
 static void	philo_init(t_table *table)
 {
 	int		i;
+	int		j;
 	t_philo	*philo;
 
 	i = -1;
 	while (++i < table->seats)
 	{
-		philo = table->philosophers + i;
+		philo = table->philos + i;
 		philo->index = i + 1;
 		philo->meals_eaten = 0;
 		philo->is_full = false;
 		philo->dead = false;
-		philo->seats = table->seats;
-		philo->time_to_die = table->time_to_die;
-		philo->time_to_eat = table->time_to_eat;
-		philo->time_to_sleep = table->time_to_sleep;
 		philo->meals_limit = table->meals_limit;
-		philo->table_mtx = table->mtx;
-		philo->ended = table->ended;
+		// philo->seats = table->seats;
+		// philo->time_to_die = table->time_to_die;
+		// philo->time_to_eat = table->time_to_eat;
+		// philo->time_to_sleep = table->time_to_sleep;
+		// philo->table_mtx = table->mtx;
+		// philo->ended = table->ended;
 		assign_forks(philo, table->forks, i);
+		if (pthread_mutex_init(&philo->philo_mtx, NULL))
+		{
+			j = -1;
+			while (++j < i)
+				pthread_mutex_destroy(&philo->philo_mtx);
+		}
 		printf("Philosopher %d is at position %d\n", philo->index, i);
 		printf("Philosopher %d has right fork %d and left fork %d\n",
 			philo->index,
-			philo->righ_fork->index,
+			philo->right_fork->index,
 			philo->left_fork->index);
 	}
 }
@@ -224,22 +235,29 @@ static int	init_forks(t_table *table)
 int	init_dinner(t_table *table)
 {
 	table->ended = false;
-	table->philosophers = malloc(sizeof(t_philo) * table->seats);
-	if (!table->philosophers)
+	table->philos = malloc(sizeof(t_philo) * table->seats);
+	if (!table->philos)
 		return (1);
 	table->forks = malloc(sizeof(t_fork) * table->seats);
 	if (!table->forks)
 	{
-		free(table->philosophers);
+		free(table->philos);
 		return (1);
 	}
 	if (!init_forks(table))
 	{
-		free(table->philosophers);
+		free(table->philos);
 		free(table->forks);
 		return (1);
 	}
 	philo_init(table);
+	if (pthread_mutex_init(&table->mtx, NULL)
+		|| pthread_mutex_init(&table->write_mtx, NULL))
+	{
+		pthread_mutex_destroy(&table->mtx);
+		pthread_mutex_destroy(&table->write_mtx);
+		return (1);
+	}
 	return (0);
 }
 
@@ -290,14 +308,27 @@ int	parse_input(char **argv, t_table *table)
 /* routine.c */
 static void	eat(t_philo *philo)
 {
+	pthread_mutex_lock(&philo->left_fork->mtx);
+	print_status(philo, "has taken the first fork");
+	pthread_mutex_lock(&philo->right_fork->mtx);
+	print_status(philo, "has taken the second fork");
+	pthread_mutex_lock(&philo->philo_mtx);
+	philo->last_meal_time = get_time();
+	pthread_mutex_unlock(&philo->philo_mtx);
+	philo->meals_eaten++;
 	print_status(philo, "is eating");
-	ft_sleep(philo->time_to_eat);
+	ft_sleep(philo->table->time_to_eat, philo->table);
+	if (philo->meals_limit > 0
+		&& philo->meals_eaten == philo->meals_limit)
+		set_bool(&philo->philo_mtx, &philo->is_full, true);
+	pthread_mutex_unlock(&philo->left_fork->mtx);
+	pthread_mutex_unlock(&philo->right_fork->mtx);
 }
 
-static void	sleep(t_philo *philo)
+static void	rest(t_philo *philo)
 {
 	print_status(philo, "is sleeping");
-	ft_sleep(philo->time_to_sleep);
+	ft_sleep(philo->table->time_to_sleep, philo->table);
 }
 
 static void	think(t_philo *philo)
@@ -310,14 +341,12 @@ void	*routine(void *data)
 	t_philo	*philo;
 
 	philo = (t_philo *)data;
-	while (1)
+	while (!get_bool(&philo->table->mtx, &philo->table->ended))
 	{
-		pthread_mutex_lock(&philo->table_mtx);
-		philo->last_meal_time = get_time();
-		pthread_mutex_unlock(&philo->table_mtx);
-		if (philo->is_full || philo->ended)
-			break;
-
+		if (get_bool(&philo->philo_mtx, &philo->is_full))
+			break ;
+		if (get_bool(&philo->philo_mtx, &philo->table->ended))
+			break ;
 		eat(philo);
 		rest(philo);
 		think(philo);
@@ -359,12 +388,16 @@ int	ft_atoi(const char *nptr)
 }
 
 /* utils.c */
-void	ft_sleep(long usecs)
+void	ft_sleep(long usecs, t_table *table)
 {
 	long	start;
 	start = get_time();
 	while (get_time() - start < usecs)
+	{
+		if (get_bool(&table->mtx, &table->ended))
+			break ;
 		usleep(usecs / 10);
+	}
 	return ;
 }
 
@@ -372,15 +405,22 @@ void	print_status(t_philo *philo, char *status)
 {
 	long	elapsed;
 
-	elapsed = get_time() - philo->start_time;
-	if (get_bool(&philo->table_mtx, &philo->ended))
+	elapsed = get_time() - philo->table->start_time;
+	if (get_bool(&philo->table->mtx, &philo->table->ended))
 		return ;
-	pthread_mutex_lock(&philo->table_mtx);
+	pthread_mutex_lock(&philo->table->write_mtx);
 	printf(WHITE"%ld"RESET  BLUE"%d"RESET" %s\n", elapsed, philo->index, status);
-	pthread_mutex_unlock(&philo->table_mtx);
+	pthread_mutex_unlock(&philo->table->write_mtx);
 }
 
-bool	get_bool(pthread_mutex_t *mtx, bool *value)
+void	set_bool(t_mtx *mtx, bool *dest, bool value)
+{
+	pthread_mutex_lock(mtx);
+	*dest = value;
+	pthread_mutex_unlock(mtx);
+}
+
+bool	get_bool(t_mtx *mtx, bool *value)
 {
 	bool	ret;
 
@@ -402,26 +442,4 @@ long	get_time(void)
 	}
 	time_of_day = (tv.tv_sec * 1000) + (tv.tv_usec / 1000);
 	return (time_of_day);
-}
-
-int	main(int argc, char **argv)
-{
-	t_table	table;
-	// DON'T FORGET TO CHANGE MAKEFILE FLAGS!!!! DUMMY
-	if (argc == 5 || argc == 6)
-	{
-		if (!parse_input(argv, &table))
-		{
-			printf(RED"Please only use digits;\n"RESET);
-			printf(RED"Values bigger than 60;\nSmaller than INT_MAX.\n"RESET);
-			return (1);
-		}
-		start_dinner(&table);
-	}
-	else
-	{
-		printf("Wrong input:\n"
-			GREEN"Please input i.e. ./philo 6 400 200 200 [10]\n"RESET);
-		return (1);
-	}
 }

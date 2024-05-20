@@ -6,7 +6,7 @@
 /*   By: jqueijo- <jqueijo-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/17 12:23:09 by jqueijo-          #+#    #+#             */
-/*   Updated: 2024/05/17 15:16:19 by jqueijo-         ###   ########.fr       */
+/*   Updated: 2024/05/20 19:41:52 by jqueijo-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,6 +47,7 @@ int	parse_input(char **argv, t_table *table)
 		table->meals_limit = ft_atoi(argv[5]);
 	else
 		table->meals_limit = -1;
+	printf("reached here\n");
 	printf("seats: %d\n", table->seats);
 	printf("time_to_die: %d\n", table->time_to_die);
 	printf("time_to_eat: %d\n", table->time_to_eat);

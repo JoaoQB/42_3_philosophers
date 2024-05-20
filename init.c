@@ -6,56 +6,73 @@
 /*   By: jqueijo- <jqueijo-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/17 15:29:41 by jqueijo-          #+#    #+#             */
-/*   Updated: 2024/05/20 11:20:42 by jqueijo-         ###   ########.fr       */
+/*   Updated: 2024/05/20 20:24:51 by jqueijo-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
 
+static int	table_mtx_init(t_table *table)
+{
+	if (pthread_mutex_init(&table->mtx, NULL))
+	{
+		printf("table mutex failed");
+		pthread_mutex_destroy(&table->mtx);
+		return (1);
+	}
+	if (pthread_mutex_init(&table->write_mtx, NULL))
+	{
+		printf("table_write mutex failed");
+		pthread_mutex_destroy(&table->write_mtx);
+		return (1);
+	}
+	return (0);
+}
+
 static void	assign_forks(t_philo *philo, t_fork *forks, int position)
 {
 	int	philo_nbr;
 
-	philo_nbr = philo->seats;
+	philo_nbr = philo->table->seats;
 	if (philo->index % 2 == 0)
 	{
 		philo->left_fork = &forks[position];
-		philo->righ_fork = &forks[(position + 1) % philo_nbr];
+		philo->right_fork = &forks[(position + 1) % philo_nbr];
 	}
 	else
 	{
 		philo->left_fork = &forks[(position + 1) % philo_nbr];
-		philo->righ_fork = &forks[position];
+		philo->right_fork = &forks[position];
 	}
 }
 
-static void	philo_init(t_table *table)
+static int	philo_init(t_table *table)
 {
 	int		i;
+	int		j;
 	t_philo	*philo;
 
 	i = -1;
 	while (++i < table->seats)
 	{
-		philo = table->philosophers + i;
+		philo = table->philos + i;
 		philo->index = i + 1;
 		philo->meals_eaten = 0;
 		philo->is_full = false;
 		philo->dead = false;
-		philo->seats = table->seats;
-		philo->time_to_die = table->time_to_die;
-		philo->time_to_eat = table->time_to_eat;
-		philo->time_to_sleep = table->time_to_sleep;
 		philo->meals_limit = table->meals_limit;
-		philo->table_mtx = table->mtx;
-		philo->ended = table->ended;
+		philo->table = table;
 		assign_forks(philo, table->forks, i);
-		printf("Philosopher %d is at position %d\n", philo->index, i);
-		printf("Philosopher %d has right fork %d and left fork %d\n",
-			philo->index,
-			philo->righ_fork->index,
-			philo->left_fork->index);
+		if (pthread_mutex_init(&philo->philo_mtx, NULL))
+		{
+			printf("philo_mtx failed");
+			j = -1;
+			while (++j < i)
+				pthread_mutex_destroy(&philo->philo_mtx);
+			return (-1);
+		}
 	}
+		return (0);
 }
 
 static int	init_forks(t_table *table)
@@ -68,6 +85,7 @@ static int	init_forks(t_table *table)
 	{
 		if (pthread_mutex_init(&table->forks[i].mtx, NULL) != 0)
 		{
+			printf("forks mutex failed");
 			j = -1;
 			while (++j < i)
 				pthread_mutex_destroy(&table->forks[j].mtx);
@@ -81,21 +99,24 @@ static int	init_forks(t_table *table)
 int	init_dinner(t_table *table)
 {
 	table->ended = false;
-	table->philosophers = malloc(sizeof(t_philo) * table->seats);
-	if (!table->philosophers)
+	table->philos = malloc(sizeof(t_philo) * table->seats);
+	if (!table->philos)
 		return (1);
 	table->forks = malloc(sizeof(t_fork) * table->seats);
 	if (!table->forks)
 	{
-		free(table->philosophers);
+		free(table->philos);
 		return (1);
 	}
 	if (!init_forks(table))
 	{
-		free(table->philosophers);
+		free(table->philos);
 		free(table->forks);
 		return (1);
 	}
-	philo_init(table);
+	if (philo_init(table))
+		return (1);
+	if (table_mtx_init(table))
+		return (1);
 	return (0);
 }
