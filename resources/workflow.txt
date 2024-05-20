@@ -6,7 +6,7 @@
 #    By: jqueijo- <jqueijo-@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/05/17 12:11:51 by jqueijo-          #+#    #+#              #
-#    Updated: 2024/05/17 12:11:55 by jqueijo-         ###   ########.fr        #
+#    Updated: 2024/05/18 12:40:42 by jqueijo-         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -85,6 +85,9 @@ Create an array/list of forks
         while (i < nbr of philos)
             pthread_mutex_init(mutex[i], NULL);
             philo[i].mutex = mutex[i]; (assign left hand or right hand philosopher pointer to a fork) (no sharing!)
+				WHYYYYYYYY?!
+
+
     init threads and assign eat/sleep/think routine to each thread;
         while (i < nbr of philos)
             pthread_create(philo[i].th_id, NULL, ROUTINE, &philo[i]);

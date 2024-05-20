@@ -6,7 +6,7 @@
 #    By: jqueijo- <jqueijo-@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/05/17 12:19:57 by jqueijo-          #+#    #+#              #
-#    Updated: 2024/05/17 16:14:13 by jqueijo-         ###   ########.fr        #
+#    Updated: 2024/05/18 14:37:38 by jqueijo-         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -16,7 +16,7 @@ SRC = main.c \
 	parsing.c \
 	string_utils.c \
 	init.c \
-	cleanup.c \
+	# cleanup.c \
 
 CC = cc
 CFLAGS =
@@ -34,7 +34,7 @@ clean:
 fclean: clean
 	rm -f $(NAME)
 
-real: CFLAGS += -Wall -Werror -Wextra #DON'T FORGET TO CHANGE
+real: CFLAGS += -Wall -Werror -Wextra -O3 #DON'T FORGET TO CHANGE
 real: re
 
 re: fclean all

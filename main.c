@@ -6,7 +6,7 @@
 /*   By: jqueijo- <jqueijo-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/17 12:08:35 by jqueijo-          #+#    #+#             */
-/*   Updated: 2024/05/17 16:08:47 by jqueijo-         ###   ########.fr       */
+/*   Updated: 2024/05/18 15:46:44 by jqueijo-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,7 +24,8 @@ int	main(int argc, char **argv)
 			printf(RED"Values bigger than 60;\nSmaller than INT_MAX.\n"RESET);
 			return (1);
 		}
-		start_dinner(&table);
+		if (init_dinner(&table))
+			return (1);
 	}
 	else
 	{
