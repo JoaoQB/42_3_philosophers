@@ -6,7 +6,7 @@
 /*   By: jqueijo- <jqueijo-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/17 12:08:35 by jqueijo-          #+#    #+#             */
-/*   Updated: 2024/05/20 20:16:20 by jqueijo-         ###   ########.fr       */
+/*   Updated: 2024/05/21 14:10:05 by jqueijo-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,6 +25,7 @@ int	main(int argc, char **argv)
 		}
 		if (init_dinner(&table))
 			return (1);
+		printf("reached main\n");
 		if (run_dinner(&table))
 			return (1);
 	}

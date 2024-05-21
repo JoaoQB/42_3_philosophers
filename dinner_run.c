@@ -1,12 +1,12 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   dining.c                                           :+:      :+:    :+:   */
+/*   dinner_run.c                                       :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: jqueijo- <jqueijo-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/18 15:48:41 by jqueijo-          #+#    #+#             */
-/*   Updated: 2024/05/20 18:15:35 by jqueijo-         ###   ########.fr       */
+/*   Updated: 2024/05/21 14:28:02 by jqueijo-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,10 +58,12 @@ int	run_dinner(t_table *table)
 	// 	// TODO
 	if (create_threads(table) == -1)
 		return (1);
+	pthread_mutex_lock(&table->mtx);
 	table->start_time = get_time();
+	printf("Dinner started at: %ld miliseconds.\n", table->start_time);
+	pthread_mutex_unlock(&table->mtx);
 	if (table->start_time == -1)
 		return (1);
-	printf("Dinner started at: %ld miliseconds.\n", table->start_time);
 	if (join_threads(table) == -1)
 		return (1);
 	return (0);

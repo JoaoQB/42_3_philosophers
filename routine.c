@@ -6,7 +6,7 @@
 /*   By: jqueijo- <jqueijo-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/20 11:21:58 by jqueijo-          #+#    #+#             */
-/*   Updated: 2024/05/20 19:21:06 by jqueijo-         ###   ########.fr       */
+/*   Updated: 2024/05/21 15:13:08 by jqueijo-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,9 +18,9 @@ static void	eat(t_philo *philo)
 	print_status(philo, "has taken the first fork");
 	pthread_mutex_lock(&philo->right_fork->mtx);
 	print_status(philo, "has taken the second fork");
-	pthread_mutex_lock(&philo->philo_mtx);
+	pthread_mutex_lock(&philo->table->mtx);
 	philo->last_meal_time = get_time();
-	pthread_mutex_unlock(&philo->philo_mtx);
+	pthread_mutex_unlock(&philo->table->mtx);
 	philo->meals_eaten++;
 	print_status(philo, "is eating");
 	ft_sleep(philo->table->time_to_eat, philo->table);
@@ -47,11 +47,11 @@ void	*routine(void *data)
 	t_philo	*philo;
 
 	philo = (t_philo *)data;
-	while (!get_bool(&philo->table->mtx, &philo->table->ended))
+	while (!get_bool(&philo->philo_mtx, &philo->table->ended))
 	{
-		if (get_bool(&philo->philo_mtx, &philo->is_full))
+		if (get_bool(&philo->table->mtx, &philo->is_full))
 			break ;
-		if (get_bool(&philo->philo_mtx, &philo->table->ended))
+		if (get_bool(&philo->table->mtx, &philo->table->ended))
 			break ;
 		eat(philo);
 		rest(philo);
