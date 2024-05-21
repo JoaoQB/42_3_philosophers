@@ -6,7 +6,7 @@
 /*   By: jqueijo- <jqueijo-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/17 12:08:45 by jqueijo-          #+#    #+#             */
-/*   Updated: 2024/05/20 19:19:10 by jqueijo-         ###   ########.fr       */
+/*   Updated: 2024/05/21 17:59:50 by jqueijo-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,7 +66,8 @@ struct s_table
 	t_philo			*philos;
 	t_fork			*forks;
 	t_mtx			mtx;
-	t_mtx			write_mtx;
+	t_mtx			monitor_mtx;
+	pthread_t		monitor;
 	int				seats;
 	int				time_to_die;
 	int				time_to_eat;
@@ -91,6 +92,7 @@ int		run_dinner(t_table *table);
 
 /* routine.c */
 void	*routine(void *data);
+void	*one_philo(void *data);
 
 /* utils.c */
 long	get_time(void);
@@ -98,6 +100,9 @@ bool	get_bool(t_mtx *mtx, bool *value);
 void	set_bool(t_mtx *mtx, bool *dest, bool value);
 void	print_status(t_philo *philo, char *status);
 void	ft_sleep(long usecs, t_table *table);
+
+/* monitor.c */
+void	*monitor_philos(void *data);
 
 /* cleanup.c */
 

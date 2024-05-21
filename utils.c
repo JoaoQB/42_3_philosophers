@@ -6,7 +6,7 @@
 /*   By: jqueijo- <jqueijo-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/20 09:30:42 by jqueijo-          #+#    #+#             */
-/*   Updated: 2024/05/21 15:09:06 by jqueijo-         ###   ########.fr       */
+/*   Updated: 2024/05/21 16:31:28 by jqueijo-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,9 +32,10 @@ void	print_status(t_philo *philo, char *status)
 	elapsed = get_time() - philo->table->start_time;
 	if (get_bool(&philo->table->mtx, &philo->table->ended))
 		return ;
-	pthread_mutex_lock(&philo->table->write_mtx);
+	if (pthread_mutex_lock(&philo->table->mtx) != 0)
+		write(2, "print failed", 13);
 	printf(WHITE"%ld"RESET  BLUE" %d"RESET" %s\n", elapsed, philo->index, status);
-	pthread_mutex_unlock(&philo->table->write_mtx);
+	pthread_mutex_unlock(&philo->table->mtx);
 }
 
 void	set_bool(t_mtx *mtx, bool *dest, bool value)

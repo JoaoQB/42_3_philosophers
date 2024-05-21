@@ -6,7 +6,7 @@
 /*   By: jqueijo- <jqueijo-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/17 15:29:41 by jqueijo-          #+#    #+#             */
-/*   Updated: 2024/05/21 14:09:15 by jqueijo-         ###   ########.fr       */
+/*   Updated: 2024/05/21 17:12:09 by jqueijo-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,10 +20,10 @@ static int	table_mtx_init(t_table *table)
 		pthread_mutex_destroy(&table->mtx);
 		return (1);
 	}
-	if (pthread_mutex_init(&table->write_mtx, NULL) != 0)
+	if (pthread_mutex_init(&table->monitor_mtx, NULL) != 0)
 	{
 		printf("table_write mutex failed");
-		pthread_mutex_destroy(&table->write_mtx);
+		pthread_mutex_destroy(&table->monitor_mtx);
 		return (1);
 	}
 	printf("table mutexes successfully initialized\n");
