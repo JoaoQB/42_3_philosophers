@@ -7,7 +7,7 @@ https://www.youtube.com/watch?v=rFYYifVj5gs | DONE
 https://medium.com/@jalal92/deadlocks-b059eed3e6c3 | DONE
 	Deadlocks AKA Mexican Standoffs
 
-https://medium.com/@jalal92/the-dining-philosophers-7157cc05315
+https://medium.com/@jalal92/the-dining-philosophers-7157cc05315 | DONE
 	Oceano The Dining Philosophers
 
 https://www.youtube.com/watch?v=_ruovgwXyYs
@@ -38,3 +38,7 @@ https://www.stolaf.edu/people/rab/pdc/text/dpsolns.htm | DONE
 
 https://medium.com/@ridwaneelfilali/philosophers-the-dinning-problem-8ea3c0fc8cc7 | DONE
 	Dining philosophers problem: Synchronization solution
+
+Testers:
+
+https://github.com/MichelleJiam/LazyPhilosophersTester

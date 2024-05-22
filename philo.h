@@ -6,7 +6,7 @@
 /*   By: jqueijo- <jqueijo-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/17 12:08:45 by jqueijo-          #+#    #+#             */
-/*   Updated: 2024/05/22 10:22:09 by jqueijo-         ###   ########.fr       */
+/*   Updated: 2024/05/22 13:57:34 by jqueijo-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,7 +59,6 @@ struct s_table
 	t_philo			*philos;
 	t_fork			*forks;
 	t_mtx			mtx;
-	// t_mtx			monitor_mtx;
 	pthread_t		monitor;
 	int				seats;
 	int				time_to_die;

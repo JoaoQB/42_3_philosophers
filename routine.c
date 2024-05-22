@@ -6,7 +6,7 @@
 /*   By: jqueijo- <jqueijo-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/20 11:21:58 by jqueijo-          #+#    #+#             */
-/*   Updated: 2024/05/22 11:50:31 by jqueijo-         ###   ########.fr       */
+/*   Updated: 2024/05/22 12:32:50 by jqueijo-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,22 +34,22 @@ static void	eat(t_philo *philo)
 {
 	if (philo->meals_limit > 0
 		&& philo->meals_eaten == philo->meals_limit)
+	{
 		set_bool(&philo->philo_mtx, &philo->is_full, true);
+		return ;
+	}
 	if (get_bool(&philo->table->mtx, &philo->table->ended))
 		return ;
-	if (pthread_mutex_lock(&philo->left_fork->mtx) != 0)
-		write(2, "left fork failed", 17);
+	pthread_mutex_lock(&philo->left_fork->mtx);
 	print_status(philo, "has taken the first fork");
 	if (get_bool(&philo->table->mtx, &philo->table->ended))
 	{
 		pthread_mutex_unlock(&philo->left_fork->mtx);
 		return ;
 	}
-	if (pthread_mutex_lock(&philo->right_fork->mtx) != 0)
-		write(2, "right fork failed", 18);
+	pthread_mutex_lock(&philo->right_fork->mtx);
 	print_status(philo, "has taken the second fork");
-	if (pthread_mutex_lock(&philo->philo_mtx) != 0)
-		write(2, "last meal failed", 17);
+	pthread_mutex_lock(&philo->philo_mtx);
 	philo->meals_eaten++;
 	philo->last_meal_time = get_time();
 	pthread_mutex_unlock(&philo->philo_mtx);

@@ -6,7 +6,7 @@
 #    By: jqueijo- <jqueijo-@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/05/17 12:19:57 by jqueijo-          #+#    #+#              #
-#    Updated: 2024/05/22 10:37:06 by jqueijo-         ###   ########.fr        #
+#    Updated: 2024/05/22 13:54:30 by jqueijo-         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -19,11 +19,10 @@ SRC = main.c \
 	dinner_run.c \
 	utils.c \
 	routine.c \
-	monitor.c \
-	# cleanup.c \
+	monitor.c
 
-CC = cc #-pthread
-CFLAGS = -Wall -Werror -Wextra #-O3
+CC = cc -pthread
+CFLAGS = -Wall -Werror -Wextra
 SANITIZER = -g -fsanitize=thread
 
 OBJ = $(SRC:.c=.o)

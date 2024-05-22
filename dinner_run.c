@@ -6,7 +6,7 @@
 /*   By: jqueijo- <jqueijo-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/18 15:48:41 by jqueijo-          #+#    #+#             */
-/*   Updated: 2024/05/22 11:51:08 by jqueijo-         ###   ########.fr       */
+/*   Updated: 2024/05/22 12:15:18 by jqueijo-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,7 +50,6 @@ static int	create_threads(t_table *table)
 		printf("Error creating monitor thread.\n");
 		return (-1);
 	}
-
 	return (1);
 }
 
@@ -61,7 +60,6 @@ static int	join_threads(t_table *table)
 
 	philo = table->philos;
 	i = -1;
-
 	if (pthread_join(table->monitor, NULL))
 	{
 		printf("Error joining monitor thread.\n");
@@ -99,6 +97,5 @@ int	run_dinner(t_table *table)
 	}
 	if (join_threads(table) == -1)
 		return (1);
-	// printf("Boolean value: %s\n", table->ended ? "true" : "false");
 	return (0);
 }
