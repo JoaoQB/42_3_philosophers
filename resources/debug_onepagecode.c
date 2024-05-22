@@ -6,7 +6,7 @@
 /*   By: jqueijo- <jqueijo-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/18 13:07:47 by jqueijo-          #+#    #+#             */
-/*   Updated: 2024/05/22 08:42:28 by jqueijo-         ###   ########.fr       */
+/*   Updated: 2024/05/22 10:18:36 by jqueijo-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,7 @@ struct s_table
 	t_philo			*philos;
 	t_fork			*forks;
 	t_mtx			mtx;
-	t_mtx			monitor_mtx;
+	// t_mtx			monitor_mtx;
 	pthread_t		monitor;
 	int				seats;
 	int				time_to_die;
@@ -111,13 +111,20 @@ static int	table_mtx_init(t_table *table)
 		pthread_mutex_destroy(&table->mtx);
 		return (1);
 	}
-	if (pthread_mutex_init(&table->monitor_mtx, NULL) != 0)
-	{
-		printf("table_write mutex failed");
-		pthread_mutex_destroy(&table->monitor_mtx);
-		return (1);
-	}
-	printf("table mutexes successfully initialized\n");
+	// if (pthread_mutex_init(&table->monitor_mtx, NULL) != 0)
+	// {
+	// 	printf("table_write mutex failed");
+	// 	pthread_mutex_destroy(&table->monitor_mtx);
+	// 	return (1);
+	// }
+	printf("table mutex successfully initialized\n");
+	// if (pthread_mutex_init(&table->monitor_mtx, NULL) != 0)
+	// {
+	// 	printf("monitor mutex failed");
+	// 	pthread_mutex_destroy(&table->monitor_mtx);
+	// 	return (1);
+	// }
+	// printf("monitor mutex successfully initialized\n");
 	return (0);
 }
 
@@ -227,6 +234,11 @@ static int	handle_one_philo(t_table *table)
 			printf("Error creating thread for  one philo.\n");
 			return (-1);
 		}
+	if (pthread_create(&table->monitor, NULL, monitor_philos, table) != 0)
+	{
+		printf("Error creating monitor thread.\n");
+		return (-1);
+	}
 	return (0);
 }
 
@@ -245,7 +257,7 @@ static int	create_threads(t_table *table)
 			return (-1);
 		}
 	}
-	if (pthread_create(&table->monitor, NULL, monitor_philos, table) != 0) //NEED to join monitor!!!!
+	if (pthread_create(&table->monitor, NULL, monitor_philos, table) != 0)
 	{
 		printf("Error creating monitor thread.\n");
 		return (-1);
@@ -311,10 +323,10 @@ static bool	philo_died(t_philo *philo)
 
 	if (get_bool(&philo->philo_mtx, &philo->is_full))
 		return (false);
-	pthread_mutex_lock(&philo->philo_mtx);
+	pthread_mutex_lock(&philo->table->mtx);
 	elapsed = get_time() - philo->last_meal_time;
 	time_to_die = philo->table->time_to_die;
-	pthread_mutex_unlock(&philo->philo_mtx);
+	pthread_mutex_unlock(&philo->table->mtx);
 	if (elapsed > time_to_die)
 		return (true);
 	return (false);
@@ -326,15 +338,15 @@ void	*monitor_philos(void *data)
 	t_table	*table;
 
 	table = (t_table *)data;
-	while (!get_bool(&table->monitor_mtx, &table->ended))
+	while (!get_bool(&table->mtx, &table->ended))
 	{
 		i = -1;
-		while(++i < table->seats && !get_bool(&table->monitor_mtx, &table->ended))
+		while(++i < table->seats && !get_bool(&table->mtx, &table->ended))
 		{
 			if (philo_died(table->philos + i))
 			{
 				print_status(table->philos + i, RED"has died"RESET);
-				set_bool(&table->monitor_mtx, &table->ended, true);
+				set_bool(&table->philos->philo_mtx, &table->ended, true);
 			}
 		}
 	}
@@ -400,7 +412,7 @@ void	*one_philo(void *data)
 	{
 		if (get_bool(&philo->table->mtx, &philo->table->ended))
 			break ;
-		ft_sleep(50, philo->table);
+		ft_sleep(5, philo->table);
 	}
 	return (NULL);
 }
@@ -448,7 +460,7 @@ void	*routine(void *data)
 	pthread_mutex_unlock(&philo->philo_mtx);
 	while (1)
 	{
-		if (get_bool(&philo->table->mtx, &philo->is_full))
+		if (get_bool(&philo->philo_mtx, &philo->is_full))
 			break ;
 		if (get_bool(&philo->table->mtx, &philo->table->ended))
 			break ;
@@ -554,6 +566,7 @@ long	get_time(void)
 int	main(int argc, char **argv)
 {
 	t_table	table;
+
 	if (argc == 5 || argc == 6)
 	{
 		if (!parse_input(argv, &table))

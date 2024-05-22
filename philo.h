@@ -6,7 +6,7 @@
 /*   By: jqueijo- <jqueijo-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/17 12:08:45 by jqueijo-          #+#    #+#             */
-/*   Updated: 2024/05/22 08:42:16 by jqueijo-         ###   ########.fr       */
+/*   Updated: 2024/05/22 10:22:09 by jqueijo-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,11 +23,11 @@
 # include <limits.h>  // INT_MAX
 
 // ANSI escape sequences
-# define RESET	"\033[0m"
-# define RED		"\033[31m"
-# define GREEN	"\033[32m"
-# define WHITE   "\033[37m"
-# define BLUE    "\033[34m"
+# define RST	"\033[0m"
+# define RD		"\033[31m"
+# define GRN	"\033[32m"
+# define WHT   "\033[37m"
+# define BL    "\033[34m"
 
 typedef struct s_table	t_table;
 
@@ -36,7 +36,7 @@ typedef pthread_mutex_t	t_mtx;
 typedef struct s_fork
 {
 	t_mtx	mtx;
-	int				index;
+	int		index;
 }	t_fork;
 
 typedef struct s_philo
@@ -59,7 +59,7 @@ struct s_table
 	t_philo			*philos;
 	t_fork			*forks;
 	t_mtx			mtx;
-	t_mtx			monitor_mtx;
+	// t_mtx			monitor_mtx;
 	pthread_t		monitor;
 	int				seats;
 	int				time_to_die;

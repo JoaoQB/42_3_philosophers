@@ -6,7 +6,7 @@
 /*   By: jqueijo- <jqueijo-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/18 15:48:41 by jqueijo-          #+#    #+#             */
-/*   Updated: 2024/05/22 08:35:04 by jqueijo-         ###   ########.fr       */
+/*   Updated: 2024/05/22 10:18:20 by jqueijo-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,10 +18,15 @@ static int	handle_one_philo(t_table *table)
 
 	philo = table->philos;
 	if (pthread_create(&philo[0].thread_id, NULL, one_philo, &philo[0]))
-		{
-			printf("Error creating thread for  one philo.\n");
-			return (-1);
-		}
+	{
+		printf("Error creating thread for  one philo.\n");
+		return (-1);
+	}
+	if (pthread_create(&table->monitor, NULL, monitor_philos, table) != 0)
+	{
+		printf("Error creating monitor thread.\n");
+		return (-1);
+	}
 	return (0);
 }
 
@@ -40,7 +45,7 @@ static int	create_threads(t_table *table)
 			return (-1);
 		}
 	}
-	if (pthread_create(&table->monitor, NULL, monitor_philos, table) != 0) //NEED to join monitor!!!!
+	if (pthread_create(&table->monitor, NULL, monitor_philos, table) != 0)
 	{
 		printf("Error creating monitor thread.\n");
 		return (-1);
@@ -83,7 +88,7 @@ int	run_dinner(t_table *table)
 		return (1);
 	else if (table->seats == 1)
 	{
-		if(handle_one_philo(table))
+		if (handle_one_philo(table))
 			return (1);
 	}
 	else
@@ -91,8 +96,6 @@ int	run_dinner(t_table *table)
 		if (create_threads(table) == -1)
 			return (1);
 	}
-	// if (pthread_create(&table->monitor, NULL, monitor_philos, table) != 0) //NEED to join monitor!!!!
-	// 	return (1);
 	if (join_threads(table) == -1)
 		return (1);
 	return (0);

@@ -6,7 +6,7 @@
 /*   By: jqueijo- <jqueijo-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/17 12:08:35 by jqueijo-          #+#    #+#             */
-/*   Updated: 2024/05/22 08:53:02 by jqueijo-         ###   ########.fr       */
+/*   Updated: 2024/05/22 10:22:32 by jqueijo-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,12 +15,13 @@
 int	main(int argc, char **argv)
 {
 	t_table	table;
+
 	if (argc == 5 || argc == 6)
 	{
 		if (!parse_input(argv, &table))
 		{
-			printf(RED"Please only use digits;\n"RESET);
-			printf(RED"Values bigger than 60;\nSmaller than INT_MAX.\n"RESET);
+			printf(RD"Please only use digits;\n"RST);
+			printf(RD"Values bigger than 60;\nSmaller than INT_MAX.\n"RST);
 			return (1);
 		}
 		if (init_dinner(&table))
@@ -31,7 +32,7 @@ int	main(int argc, char **argv)
 	else
 	{
 		printf("Wrong input:\n"
-			GREEN"Please input i.e. ./philo 6 400 200 200 [10]\n"RESET);
+			GRN"Please input i.e. ./philo 6 400 200 200 [10]\n"RST);
 		return (1);
 	}
 }

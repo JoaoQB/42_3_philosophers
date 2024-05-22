@@ -6,7 +6,7 @@
 /*   By: jqueijo- <jqueijo-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/20 11:21:58 by jqueijo-          #+#    #+#             */
-/*   Updated: 2024/05/22 08:55:05 by jqueijo-         ###   ########.fr       */
+/*   Updated: 2024/05/22 10:22:49 by jqueijo-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,7 @@ static void	eat(t_philo *philo)
 	philo->meals_eaten++;
 	philo->last_meal_time = get_time();
 	pthread_mutex_unlock(&philo->philo_mtx);
-	print_status(philo, GREEN"is eating"RESET);
+	print_status(philo, GRN"is eating"RST);
 	ft_sleep(philo->table->time_to_eat, philo->table);
 	if (philo->meals_limit > 0
 		&& philo->meals_eaten == philo->meals_limit)
@@ -73,7 +73,7 @@ void	*routine(void *data)
 	pthread_mutex_unlock(&philo->philo_mtx);
 	while (1)
 	{
-		if (get_bool(&philo->table->mtx, &philo->is_full))
+		if (get_bool(&philo->philo_mtx, &philo->is_full))
 			break ;
 		if (get_bool(&philo->table->mtx, &philo->table->ended))
 			break ;

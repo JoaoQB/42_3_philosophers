@@ -6,7 +6,7 @@
 /*   By: jqueijo- <jqueijo-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/20 09:30:42 by jqueijo-          #+#    #+#             */
-/*   Updated: 2024/05/21 16:31:28 by jqueijo-         ###   ########.fr       */
+/*   Updated: 2024/05/22 10:25:00 by jqueijo-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,7 @@
 void	ft_sleep(long usecs, t_table *table)
 {
 	long	start;
+
 	start = get_time();
 	while (get_time() - start < usecs)
 	{
@@ -34,7 +35,7 @@ void	print_status(t_philo *philo, char *status)
 		return ;
 	if (pthread_mutex_lock(&philo->table->mtx) != 0)
 		write(2, "print failed", 13);
-	printf(WHITE"%ld"RESET  BLUE" %d"RESET" %s\n", elapsed, philo->index, status);
+	printf(WHT"%ld"RST BL" %d"RST" %s\n", elapsed, philo->index, status);
 	pthread_mutex_unlock(&philo->table->mtx);
 }
 
