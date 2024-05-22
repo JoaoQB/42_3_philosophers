@@ -6,7 +6,7 @@
 /*   By: jqueijo- <jqueijo-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/17 15:29:41 by jqueijo-          #+#    #+#             */
-/*   Updated: 2024/05/22 10:17:33 by jqueijo-         ###   ########.fr       */
+/*   Updated: 2024/05/22 11:52:37 by jqueijo-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -20,20 +20,6 @@ static int	table_mtx_init(t_table *table)
 		pthread_mutex_destroy(&table->mtx);
 		return (1);
 	}
-	// if (pthread_mutex_init(&table->monitor_mtx, NULL) != 0)
-	// {
-	// 	printf("table_write mutex failed");
-	// 	pthread_mutex_destroy(&table->monitor_mtx);
-	// 	return (1);
-	// }
-	printf("table mutex successfully initialized\n");
-	// if (pthread_mutex_init(&table->monitor_mtx, NULL) != 0)
-	// {
-	// 	printf("monitor mutex failed");
-	// 	pthread_mutex_destroy(&table->monitor_mtx);
-	// 	return (1);
-	// }
-	// printf("monitor mutex successfully initialized\n");
 	return (0);
 }
 
@@ -52,7 +38,6 @@ static void	assign_forks(t_philo *philo, t_fork *forks, int position)
 		philo->left_fork = &forks[(position + 1) % philo_nbr];
 		philo->right_fork = &forks[position];
 	}
-	printf("philo %d forks successfully assigned\n", position + 1);
 }
 
 static int	philo_init(t_table *table)
@@ -102,7 +87,6 @@ static int	init_forks(t_table *table)
 		}
 		table->forks[i].index = i;
 	}
-	printf("forks successfully initialized\n");
 	return (1);
 }
 

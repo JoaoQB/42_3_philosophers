@@ -6,7 +6,7 @@
 /*   By: jqueijo- <jqueijo-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/18 15:48:41 by jqueijo-          #+#    #+#             */
-/*   Updated: 2024/05/22 10:18:20 by jqueijo-         ###   ########.fr       */
+/*   Updated: 2024/05/22 11:51:08 by jqueijo-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,6 +50,7 @@ static int	create_threads(t_table *table)
 		printf("Error creating monitor thread.\n");
 		return (-1);
 	}
+
 	return (1);
 }
 
@@ -60,6 +61,12 @@ static int	join_threads(t_table *table)
 
 	philo = table->philos;
 	i = -1;
+
+	if (pthread_join(table->monitor, NULL))
+	{
+		printf("Error joining monitor thread.\n");
+		return (-1);
+	}
 	while (++i < table->seats)
 	{
 		if (pthread_join(philo[i].thread_id, NULL))
@@ -67,11 +74,6 @@ static int	join_threads(t_table *table)
 			printf("Error joining thread for philo %d.\n", philo[i].index);
 			return (-1);
 		}
-	}
-	if (pthread_join(table->monitor, NULL))
-	{
-		printf("Error joining monitor thread.\n");
-		return (-1);
 	}
 	return (1);
 }
@@ -82,7 +84,6 @@ int	run_dinner(t_table *table)
 	table->start_time = get_time();
 	if (table->start_time == -1)
 		return (1);
-	printf("Dinner started at: %ld miliseconds.\n", table->start_time);
 	pthread_mutex_unlock(&table->mtx);
 	if (table->meals_limit == 0)
 		return (1);
@@ -98,5 +99,6 @@ int	run_dinner(t_table *table)
 	}
 	if (join_threads(table) == -1)
 		return (1);
+	// printf("Boolean value: %s\n", table->ended ? "true" : "false");
 	return (0);
 }

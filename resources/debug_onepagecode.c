@@ -6,7 +6,7 @@
 /*   By: jqueijo- <jqueijo-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/18 13:07:47 by jqueijo-          #+#    #+#             */
-/*   Updated: 2024/05/22 10:18:36 by jqueijo-         ###   ########.fr       */
+/*   Updated: 2024/05/22 10:28:15 by jqueijo-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,11 +24,11 @@
 # include <limits.h>  // INT_MAX
 
 // ANSI escape sequences
-# define RESET	"\033[0m"
-# define RED		"\033[31m"
-# define GREEN	"\033[32m"
-# define WHITE   "\033[37m"
-# define BLUE    "\033[34m"
+# define RST	"\033[0m"
+# define RD		"\033[31m"
+# define GRN	"\033[32m"
+# define WHT   "\033[37m"
+# define BL    "\033[34m"
 
 typedef struct s_table	t_table;
 
@@ -37,7 +37,7 @@ typedef pthread_mutex_t	t_mtx;
 typedef struct s_fork
 {
 	t_mtx	mtx;
-	int				index;
+	int		index;
 }	t_fork;
 
 typedef struct s_philo
@@ -171,9 +171,8 @@ static int	philo_init(t_table *table)
 			return (-1);
 		}
 		assign_forks(philo, table->forks, i);
-		printf("philo %d successfully initialized\n", i + 1);
 	}
-		return (0);
+	return (0);
 }
 
 static int	init_forks(t_table *table)
@@ -230,10 +229,10 @@ static int	handle_one_philo(t_table *table)
 
 	philo = table->philos;
 	if (pthread_create(&philo[0].thread_id, NULL, one_philo, &philo[0]))
-		{
-			printf("Error creating thread for  one philo.\n");
-			return (-1);
-		}
+	{
+		printf("Error creating thread for  one philo.\n");
+		return (-1);
+	}
 	if (pthread_create(&table->monitor, NULL, monitor_philos, table) != 0)
 	{
 		printf("Error creating monitor thread.\n");
@@ -300,7 +299,7 @@ int	run_dinner(t_table *table)
 		return (1);
 	else if (table->seats == 1)
 	{
-		if(handle_one_philo(table))
+		if (handle_one_philo(table))
 			return (1);
 	}
 	else
@@ -308,8 +307,6 @@ int	run_dinner(t_table *table)
 		if (create_threads(table) == -1)
 			return (1);
 	}
-	// if (pthread_create(&table->monitor, NULL, monitor_philos, table) != 0) //NEED to join monitor!!!!
-	// 	return (1);
 	if (join_threads(table) == -1)
 		return (1);
 	return (0);
@@ -341,11 +338,11 @@ void	*monitor_philos(void *data)
 	while (!get_bool(&table->mtx, &table->ended))
 	{
 		i = -1;
-		while(++i < table->seats && !get_bool(&table->mtx, &table->ended))
+		while (++i < table->seats && !get_bool(&table->mtx, &table->ended))
 		{
 			if (philo_died(table->philos + i))
 			{
-				print_status(table->philos + i, RED"has died"RESET);
+				print_status(table->philos + i, RD"has died"RST);
 				set_bool(&table->philos->philo_mtx, &table->ended, true);
 			}
 		}
@@ -430,7 +427,7 @@ static void	eat(t_philo *philo)
 	philo->meals_eaten++;
 	philo->last_meal_time = get_time();
 	pthread_mutex_unlock(&philo->philo_mtx);
-	print_status(philo, GREEN"is eating"RESET);
+	print_status(philo, GRN"is eating"RST);
 	ft_sleep(philo->table->time_to_eat, philo->table);
 	if (philo->meals_limit > 0
 		&& philo->meals_eaten == philo->meals_limit)
@@ -508,6 +505,7 @@ int	ft_atoi(const char *nptr)
 void	ft_sleep(long usecs, t_table *table)
 {
 	long	start;
+
 	start = get_time();
 	while (get_time() - start < usecs)
 	{
@@ -527,7 +525,7 @@ void	print_status(t_philo *philo, char *status)
 		return ;
 	if (pthread_mutex_lock(&philo->table->mtx) != 0)
 		write(2, "print failed", 13);
-	printf(WHITE"%ld"RESET  BLUE" %d"RESET" %s\n", elapsed, philo->index, status);
+	printf(WHT"%ld"RST BL" %d"RST" %s\n", elapsed, philo->index, status);
 	pthread_mutex_unlock(&philo->table->mtx);
 }
 
@@ -571,20 +569,19 @@ int	main(int argc, char **argv)
 	{
 		if (!parse_input(argv, &table))
 		{
-			printf(RED"Please only use digits;\n"RESET);
-			printf(RED"Values bigger than 60;\nSmaller than INT_MAX.\n"RESET);
+			printf(RD"Please only use digits;\n"RST);
+			printf(RD"Values bigger than 60;\nSmaller than INT_MAX.\n"RST);
 			return (1);
 		}
 		if (init_dinner(&table))
 			return (1);
-		printf("reached main\n");
 		if (run_dinner(&table))
 			return (1);
 	}
 	else
 	{
 		printf("Wrong input:\n"
-			GREEN"Please input i.e. ./philo 6 400 200 200 [10]\n"RESET);
+			GRN"Please input i.e. ./philo 6 400 200 200 [10]\n"RST);
 		return (1);
 	}
 }

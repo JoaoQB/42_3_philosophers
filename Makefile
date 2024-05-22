@@ -6,7 +6,7 @@
 #    By: jqueijo- <jqueijo-@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/05/17 12:19:57 by jqueijo-          #+#    #+#              #
-#    Updated: 2024/05/21 17:12:34 by jqueijo-         ###   ########.fr        #
+#    Updated: 2024/05/22 10:37:06 by jqueijo-         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -22,7 +22,7 @@ SRC = main.c \
 	monitor.c \
 	# cleanup.c \
 
-CC = cc -pthread
+CC = cc #-pthread
 CFLAGS = -Wall -Werror -Wextra #-O3
 SANITIZER = -g -fsanitize=thread
 

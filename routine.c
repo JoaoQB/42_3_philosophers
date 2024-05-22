@@ -6,7 +6,7 @@
 /*   By: jqueijo- <jqueijo-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/20 11:21:58 by jqueijo-          #+#    #+#             */
-/*   Updated: 2024/05/22 10:22:49 by jqueijo-         ###   ########.fr       */
+/*   Updated: 2024/05/22 11:50:31 by jqueijo-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,9 +32,19 @@ void	*one_philo(void *data)
 
 static void	eat(t_philo *philo)
 {
+	if (philo->meals_limit > 0
+		&& philo->meals_eaten == philo->meals_limit)
+		set_bool(&philo->philo_mtx, &philo->is_full, true);
+	if (get_bool(&philo->table->mtx, &philo->table->ended))
+		return ;
 	if (pthread_mutex_lock(&philo->left_fork->mtx) != 0)
 		write(2, "left fork failed", 17);
 	print_status(philo, "has taken the first fork");
+	if (get_bool(&philo->table->mtx, &philo->table->ended))
+	{
+		pthread_mutex_unlock(&philo->left_fork->mtx);
+		return ;
+	}
 	if (pthread_mutex_lock(&philo->right_fork->mtx) != 0)
 		write(2, "right fork failed", 18);
 	print_status(philo, "has taken the second fork");
@@ -45,21 +55,22 @@ static void	eat(t_philo *philo)
 	pthread_mutex_unlock(&philo->philo_mtx);
 	print_status(philo, GRN"is eating"RST);
 	ft_sleep(philo->table->time_to_eat, philo->table);
-	if (philo->meals_limit > 0
-		&& philo->meals_eaten == philo->meals_limit)
-		set_bool(&philo->philo_mtx, &philo->is_full, true);
-	pthread_mutex_unlock(&philo->left_fork->mtx);
 	pthread_mutex_unlock(&philo->right_fork->mtx);
+	pthread_mutex_unlock(&philo->left_fork->mtx);
 }
 
 static void	rest(t_philo *philo)
 {
+	if (get_bool(&philo->table->mtx, &philo->table->ended))
+		return ;
 	print_status(philo, "is sleeping");
 	ft_sleep(philo->table->time_to_sleep, philo->table);
 }
 
 static void	think(t_philo *philo)
 {
+	if (get_bool(&philo->table->mtx, &philo->table->ended))
+		return ;
 	print_status(philo, "is thinking");
 }
 
