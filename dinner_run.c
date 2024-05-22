@@ -6,7 +6,7 @@
 /*   By: jqueijo- <jqueijo-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/18 15:48:41 by jqueijo-          #+#    #+#             */
-/*   Updated: 2024/05/22 12:15:18 by jqueijo-         ###   ########.fr       */
+/*   Updated: 2024/05/22 14:39:02 by jqueijo-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ static int	handle_one_philo(t_table *table)
 {
 	t_philo	*philo;
 
-	philo = table->philos;
+	philo = table->phil;
 	if (pthread_create(&philo[0].thread_id, NULL, one_philo, &philo[0]))
 	{
 		printf("Error creating thread for  one philo.\n");
@@ -35,7 +35,7 @@ static int	create_threads(t_table *table)
 	t_philo	*philo;
 	int		i;
 
-	philo = table->philos;
+	philo = table->phil;
 	i = -1;
 	while (++i < table->seats)
 	{
@@ -58,7 +58,7 @@ static int	join_threads(t_table *table)
 	t_philo	*philo;
 	int		i;
 
-	philo = table->philos;
+	philo = table->phil;
 	i = -1;
 	if (pthread_join(table->monitor, NULL))
 	{

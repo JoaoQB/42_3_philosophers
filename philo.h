@@ -6,7 +6,7 @@
 /*   By: jqueijo- <jqueijo-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/17 12:08:45 by jqueijo-          #+#    #+#             */
-/*   Updated: 2024/05/22 13:57:34 by jqueijo-         ###   ########.fr       */
+/*   Updated: 2024/05/22 14:37:30 by jqueijo-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,7 @@ typedef struct s_philo
 
 struct s_table
 {
-	t_philo			*philos;
+	t_philo			*phil;
 	t_fork			*forks;
 	t_mtx			mtx;
 	pthread_t		monitor;

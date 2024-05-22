@@ -6,7 +6,7 @@
 /*   By: jqueijo- <jqueijo-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/17 12:08:35 by jqueijo-          #+#    #+#             */
-/*   Updated: 2024/05/22 14:27:39 by jqueijo-         ###   ########.fr       */
+/*   Updated: 2024/05/22 14:38:06 by jqueijo-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,18 +21,18 @@ static int	cleanup(t_table *table)
 	{
 		if (i % 2 == 0)
 		{
-			if (pthread_mutex_destroy(&(table->philos + i)->left_fork->mtx) != 0)
+			if (pthread_mutex_destroy(&(table->phil + i)->left_fork->mtx) != 0)
 				return (1);
 		}
 		else
 		{
-			if (pthread_mutex_destroy(&(table->philos + i)->right_fork->mtx) != 0)
+			if (pthread_mutex_destroy(&(table->phil + i)->right_fork->mtx) != 0)
 				return (1);
 		}
-		if (pthread_mutex_destroy(&(table->philos + i)->philo_mtx) != 0)
+		if (pthread_mutex_destroy(&(table->phil + i)->philo_mtx) != 0)
 			return (1);
 	}
-	free (table->philos);
+	free (table->phil);
 	free (table->forks);
 	if (pthread_mutex_destroy(&table->mtx) != 0)
 		return (1);

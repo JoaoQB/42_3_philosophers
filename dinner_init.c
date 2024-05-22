@@ -6,7 +6,7 @@
 /*   By: jqueijo- <jqueijo-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/17 15:29:41 by jqueijo-          #+#    #+#             */
-/*   Updated: 2024/05/22 11:52:37 by jqueijo-         ###   ########.fr       */
+/*   Updated: 2024/05/22 14:37:43 by jqueijo-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -49,7 +49,7 @@ static int	philo_init(t_table *table)
 	i = -1;
 	while (++i < table->seats)
 	{
-		philo = table->philos + i;
+		philo = table->phil + i;
 		philo->table = table;
 		philo->index = i + 1;
 		philo->meals_eaten = 0;
@@ -93,18 +93,18 @@ static int	init_forks(t_table *table)
 int	init_dinner(t_table *table)
 {
 	table->ended = false;
-	table->philos = malloc(sizeof(t_philo) * table->seats);
-	if (!table->philos)
+	table->phil = malloc(sizeof(t_philo) * table->seats);
+	if (!table->phil)
 		return (1);
 	table->forks = malloc(sizeof(t_fork) * table->seats);
 	if (!table->forks)
 	{
-		free(table->philos);
+		free(table->phil);
 		return (1);
 	}
 	if (!init_forks(table))
 	{
-		free(table->philos);
+		free(table->phil);
 		free(table->forks);
 		return (1);
 	}
