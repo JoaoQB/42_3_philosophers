@@ -6,7 +6,7 @@
 /*   By: jqueijo- <jqueijo-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/17 12:08:45 by jqueijo-          #+#    #+#             */
-/*   Updated: 2024/05/21 17:59:50 by jqueijo-         ###   ########.fr       */
+/*   Updated: 2024/05/22 08:42:16 by jqueijo-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,19 +46,12 @@ typedef struct s_philo
 	t_fork			*left_fork;
 	t_fork			*right_fork;
 	t_mtx			philo_mtx;
-	// t_mtx			write_mtx;
 	int				index;
 	int				meals_eaten;
 	long			last_meal_time;
 	bool			is_full;
 	bool			dead;
 	int				meals_limit;
-	// int				seats;
-	// int				time_to_die;
-	// int				time_to_eat;
-	// int				time_to_sleep;
-	// long			start_time;
-	// bool			ended;
 }	t_philo;
 
 struct s_table

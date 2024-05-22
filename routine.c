@@ -6,7 +6,7 @@
 /*   By: jqueijo- <jqueijo-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/20 11:21:58 by jqueijo-          #+#    #+#             */
-/*   Updated: 2024/05/21 18:06:46 by jqueijo-         ###   ########.fr       */
+/*   Updated: 2024/05/22 08:55:05 by jqueijo-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,7 +25,7 @@ void	*one_philo(void *data)
 	{
 		if (get_bool(&philo->table->mtx, &philo->table->ended))
 			break ;
-		ft_sleep(50, philo->table);
+		ft_sleep(5, philo->table);
 	}
 	return (NULL);
 }

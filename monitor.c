@@ -6,7 +6,7 @@
 /*   By: jqueijo- <jqueijo-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/21 17:08:26 by jqueijo-          #+#    #+#             */
-/*   Updated: 2024/05/21 18:02:25 by jqueijo-         ###   ########.fr       */
+/*   Updated: 2024/05/22 08:53:41 by jqueijo-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -19,10 +19,10 @@ static bool	philo_died(t_philo *philo)
 
 	if (get_bool(&philo->philo_mtx, &philo->is_full))
 		return (false);
-	pthread_mutex_lock(&philo->philo_mtx);
+	pthread_mutex_lock(&philo->table->monitor_mtx);
 	elapsed = get_time() - philo->last_meal_time;
 	time_to_die = philo->table->time_to_die;
-	pthread_mutex_unlock(&philo->philo_mtx);
+	pthread_mutex_unlock(&philo->table->monitor_mtx);
 	if (elapsed > time_to_die)
 		return (true);
 	return (false);
