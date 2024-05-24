@@ -10,6 +10,12 @@ https://medium.com/@jalal92/deadlocks-b059eed3e6c3 | DONE
 https://medium.com/@jalal92/the-dining-philosophers-7157cc05315 | DONE
 	Oceano The Dining Philosophers
 
+https://gitlab.com/fpietro.lw/philosophers/-/blob/main/src/dinner.c?ref_type=heads
+	fmour gitlab
+
+https://nafuka11.github.io/philosophers-visualizer/
+	Philosophers visualizer
+
 https://www.youtube.com/watch?v=_ruovgwXyYs
 	 Deadlock 3: Dining Philosophers
 
@@ -21,9 +27,6 @@ https://pages.mtu.edu/~shene/NSF-3/e-Book/index.html
 
 https://www.codequoi.com/en/threads-mutexes-and-concurrent-programming-in-c/ | DONE
 	Threads, Mutexes and Concurrent Programming in C
-
-https://nafuka11.github.io/philosophers-visualizer/
-	Philosophers visualizer
 
 Solutions:
 
