@@ -6,7 +6,7 @@
 #    By: jqueijo- <jqueijo-@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/05/23 11:31:47 by jqueijo-          #+#    #+#              #
-#    Updated: 2024/05/30 15:36:48 by jqueijo-         ###   ########.fr        #
+#    Updated: 2024/05/30 18:45:21 by jqueijo-         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -39,7 +39,7 @@ clean:
 fclean: clean
 	rm -f $(NAME)
 
-debug: $(CFLAGS) += $(SANITIZE)
+debug: CFLAGS += $(SANITIZE)
 debug: re
 
 re: fclean all

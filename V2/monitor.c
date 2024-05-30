@@ -6,7 +6,7 @@
 /*   By: jqueijo- <jqueijo-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/24 12:00:03 by jqueijo-          #+#    #+#             */
-/*   Updated: 2024/05/30 17:37:36 by jqueijo-         ###   ########.fr       */
+/*   Updated: 2024/05/30 19:01:30 by jqueijo-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,12 +14,23 @@
 
 bool	is_full(t_philo *philo)
 {
-	if (philo->meals_eaten > 0 && philo->meals_eaten == philo->meals_limit)
+	if (!get_bool(&philo->philo_mtx, &philo->full))
 	{
-		set_bool(&philo->philo_mtx, &philo->full, true);
-		return (true);
+		if (philo->meals_eaten > 0 && philo->meals_eaten == philo->meals_limit)
+		{
+			set_bool(&philo->philo_mtx, &philo->full, true);
+			return (true);
+		}
+		return (false);
 	}
-	return (false);
+	else
+		return (true);
+}
+
+static void	end_sim(t_table *table, int i)
+{
+	print_status(table->phil + i, RD"has died"RST);
+	set_bool(&table->ended_mtx, &table->ended, true);
 }
 
 static bool	philo_died(t_philo *philo)
@@ -27,7 +38,7 @@ static bool	philo_died(t_philo *philo)
 	long	elapsed;
 	long	time_to_die;
 
-	if (get_bool(&philo->philo_mtx, &philo->full)
+	if (is_full(philo)
 		|| get_bool(&philo->table->ended_mtx, &philo->table->ended))
 		return (false);
 	pthread_mutex_lock(&philo->philo_mtx);
@@ -39,37 +50,11 @@ static bool	philo_died(t_philo *philo)
 	return (false);
 }
 
-static bool	check_philos(t_table *table, int *served)
-{
-	int	i;
-
-	i = -1;
-	while (++i < table->seats)
-	{
-		is_full(&table->phil[i]);
-		if (get_bool(&table->phil[i].philo_mtx, &table->phil[i].full))
-		{
-			(*served)++;
-			if (*served == table->seats)
-			{
-				set_bool(&table->ended_mtx, &table->ended, true);
-				return (true);
-			}
-		}
-		if (philo_died(table->phil + i))
-		{
-			print_status(table->phil + i, RD"has died"RST);
-			set_bool(&table->ended_mtx, &table->ended, true);
-			return (true);
-		}
-	}
-	return (false);
-}
-
 void	*monitor_philos(void *data)
 {
-	t_table	*table;
+	int		i;
 	int		served;
+	t_table	*table;
 
 	served = 0;
 	table = (t_table *)data;
@@ -77,8 +62,19 @@ void	*monitor_philos(void *data)
 	{
 		if (get_bool(&table->ended_mtx, &table->ended))
 			return (NULL);
-		if (check_philos(table, &served))
-			return (NULL);
+		i = -1;
+		while (++i < table->seats)
+		{
+			if (is_full(&table->phil[i]))
+				served++;
+			if (served == table->seats)
+				return (NULL);
+			if (philo_died(table->phil + i))
+			{
+				end_sim(table, i);
+				return (NULL);
+			}
+		}
 	}
 	return (NULL);
 }
