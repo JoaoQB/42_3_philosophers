@@ -6,7 +6,7 @@
 /*   By: jqueijo- <jqueijo-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/23 17:56:19 by jqueijo-          #+#    #+#             */
-/*   Updated: 2024/05/24 11:32:47 by jqueijo-         ###   ########.fr       */
+/*   Updated: 2024/05/30 15:40:04 by jqueijo-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,18 +37,18 @@ static bool	init_mtx(t_table *table)
 	}
 	else if (pthread_mutex_init(&table->write_mtx, NULL))
 	{
-			free_mtx(table->seats, table, 'a');
-			pthread_mutex_destroy(&table->ended_mtx);
-			free_data(table);
-			return (false);
+		free_mtx(table->seats, table, 'a');
+		pthread_mutex_destroy(&table->ended_mtx);
+		free_data(table);
+		return (false);
 	}
 	else if (pthread_mutex_init(&table->monitor_mtx, NULL))
 	{
-			free_mtx(table->seats, table, 'a');
-			pthread_mutex_destroy(&table->ended_mtx);
-			pthread_mutex_destroy(&table->write_mtx);
-			free_data(table);
-			return (false);
+		free_mtx(table->seats, table, 'a');
+		pthread_mutex_destroy(&table->ended_mtx);
+		pthread_mutex_destroy(&table->write_mtx);
+		free_data(table);
+		return (false);
 	}
 	return (true);
 }
@@ -56,7 +56,7 @@ static bool	init_mtx(t_table *table)
 static bool	init_philos(t_table *table)
 {
 	t_philo	*philo;
-	int	i;
+	int		i;
 
 	i = -1;
 	while (++i < table->seats)

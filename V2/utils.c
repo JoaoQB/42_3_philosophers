@@ -6,11 +6,30 @@
 /*   By: jqueijo- <jqueijo-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/24 11:39:41 by jqueijo-          #+#    #+#             */
-/*   Updated: 2024/05/24 11:57:58 by jqueijo-         ###   ########.fr       */
+/*   Updated: 2024/05/30 15:47:34 by jqueijo-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
+
+void	ft_sleep(long usecs, t_table *table)
+{
+	long	start;
+
+	start = get_time();
+	if (usecs < 10)
+	{
+		usleep(usecs);
+		return ;
+	}
+	while (get_time() - start < usecs)
+	{
+		if (get_bool(&table->ended_mtx, &table->ended))
+			break ;
+		usleep(usecs / 10);
+	}
+	return ;
+}
 
 void	print_status(t_philo *philo, char *status)
 {

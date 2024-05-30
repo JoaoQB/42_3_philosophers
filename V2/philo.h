@@ -6,7 +6,7 @@
 /*   By: jqueijo- <jqueijo-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/23 11:36:01 by jqueijo-          #+#    #+#             */
-/*   Updated: 2024/05/24 12:02:13 by jqueijo-         ###   ########.fr       */
+/*   Updated: 2024/05/30 17:14:14 by jqueijo-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,8 +73,8 @@ struct s_table
 bool	parse_input(char **argv, t_table *table);
 
 /* str_utils.c */
-int	is_digit(char c);
-int	ft_atoi(const char *nptr);
+int		is_digit(char c);
+int		ft_atoi(const char *nptr);
 
 /* init_data.c */
 bool	init_data(t_table *table);
@@ -92,11 +92,14 @@ long	get_time(void);
 bool	get_bool(t_mtx *mtx, bool *value);
 void	set_bool(t_mtx *mtx, bool *dest, bool value);
 void	print_status(t_philo *philo, char *status);
+void	ft_sleep(long usecs, t_table *table);
 
 /* routine .c */
 void	*routine(void *data);
+void	*one_philo(void *data);
 
 /* monitor.c */
 void	*monitor_philos(void *data);
+bool	is_full(t_philo *philo);
 
 #endif

@@ -6,7 +6,7 @@
 /*   By: jqueijo- <jqueijo-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/23 12:17:07 by jqueijo-          #+#    #+#             */
-/*   Updated: 2024/05/23 12:25:03 by jqueijo-         ###   ########.fr       */
+/*   Updated: 2024/05/30 15:29:31 by jqueijo-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ bool	parse_input(char **argv, t_table *table)
 	table->time_to_eat = ft_atoi(argv[3]);
 	table->time_to_sleep = ft_atoi(argv[4]);
 	if (table->time_to_die < 60 || table->time_to_eat < 60
-		|| table->time_to_sleep < 60)
+		|| table->time_to_sleep < 60 || table->seats < 1)
 		return (false);
 	if (argv[5])
 		table->meals_limit = ft_atoi(argv[5]);

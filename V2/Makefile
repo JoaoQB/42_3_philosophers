@@ -6,7 +6,7 @@
 #    By: jqueijo- <jqueijo-@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2024/05/23 11:31:47 by jqueijo-          #+#    #+#              #
-#    Updated: 2024/05/24 12:00:38 by jqueijo-         ###   ########.fr        #
+#    Updated: 2024/05/30 15:36:48 by jqueijo-         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -19,7 +19,7 @@ SRC = main.c \
 	cleanup.c \
 	init_dinner.c \
 	utils.c \
-	routine .c \
+	routine.c \
 	monitor.c \
 
 CC = cc -pthread
