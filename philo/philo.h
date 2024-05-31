@@ -6,7 +6,7 @@
 /*   By: jqueijo- <jqueijo-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/23 11:36:01 by jqueijo-          #+#    #+#             */
-/*   Updated: 2024/05/30 19:22:10 by jqueijo-         ###   ########.fr       */
+/*   Updated: 2024/05/31 15:15:37 by jqueijo-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,11 +61,11 @@ struct s_table
 	t_mtx		write_mtx;
 	t_mtx		full_mtx;
 	int			seats;
-	int			time_to_die;
-	int			time_to_eat;
-	int			time_to_sleep;
+	long		time_to_die;
+	long		time_to_eat;
+	long		time_to_sleep;
 	int			meals_limit;
-	int			start_time;
+	long		start_time;
 	bool		ended;
 };
 
