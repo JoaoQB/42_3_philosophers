@@ -6,11 +6,23 @@
 /*   By: jqueijo- <jqueijo-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/24 12:00:03 by jqueijo-          #+#    #+#             */
-/*   Updated: 2024/05/31 16:26:59 by jqueijo-         ###   ########.fr       */
+/*   Updated: 2024/05/31 17:32:51 by jqueijo-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "philo.h"
+
+static bool	dinner_served(t_philo *philo)
+{
+	pthread_mutex_lock(&philo->table->served_mtx);
+	if (philo->table->served == philo->table->seats)
+	{
+		pthread_mutex_unlock(&philo->table->served_mtx);
+		return (true);
+	}
+	pthread_mutex_unlock(&philo->table->served_mtx);
+	return (false);
+}
 
 bool	is_full(t_philo *philo)
 {
@@ -20,6 +32,9 @@ bool	is_full(t_philo *philo)
 		if (philo->meals_eaten > 0 && philo->meals_eaten == philo->meals_limit)
 		{
 			set_bool(&philo->table->full_mtx, &philo->full, true);
+			pthread_mutex_lock(&philo->table->served_mtx);
+			philo->table->served += 1;
+			pthread_mutex_unlock(&philo->table->served_mtx);
 			pthread_mutex_unlock(&philo->philo_mtx);
 			return (true);
 		}
@@ -41,8 +56,6 @@ static void	end_sim(t_table *table, int i)
 	table->ended = true;
 	pthread_mutex_unlock(&table->write_mtx);
 	pthread_mutex_unlock(&table->ended_mtx);
-	// print_status(table->phil + i, RD"died"RST);
-	// set_bool(&table->ended_mtx, &table->ended, true);
 }
 
 static bool	philo_died(t_philo *philo)
@@ -70,10 +83,8 @@ static bool	philo_died(t_philo *philo)
 void	*monitor_philos(void *data)
 {
 	int		i;
-	int		served;
 	t_table	*table;
 
-	served = 0;
 	table = (t_table *)data;
 	while (1)
 	{
@@ -82,11 +93,9 @@ void	*monitor_philos(void *data)
 		i = -1;
 		while (++i < table->seats)
 		{
-			if (is_full(&table->phil[i]))
-				served++;
-			if (served == table->seats)
+			is_full(table->phil + i);
+			if (dinner_served(table->phil + i))
 			{
-				printf("served %d, seats %d\n", served, table->seats);
 				set_bool(&table->ended_mtx, &table->ended, true);
 				return (NULL);
 			}

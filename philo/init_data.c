@@ -6,7 +6,7 @@
 /*   By: jqueijo- <jqueijo-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/23 17:56:19 by jqueijo-          #+#    #+#             */
-/*   Updated: 2024/05/31 16:23:42 by jqueijo-         ###   ########.fr       */
+/*   Updated: 2024/05/31 16:53:19 by jqueijo-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,17 +37,20 @@ static bool	init_mtx(t_table *table)
 	}
 	else if (pthread_mutex_init(&table->write_mtx, NULL))
 	{
-		free_mtx(table->seats, table, 'a');
 		pthread_mutex_destroy(&table->ended_mtx);
-		free_data(table);
 		return (false);
 	}
 	else if (pthread_mutex_init(&table->full_mtx, NULL))
 	{
-		free_mtx(table->seats, table, 'a');
 		pthread_mutex_destroy(&table->ended_mtx);
 		pthread_mutex_destroy(&table->write_mtx);
-		free_data(table);
+		return (false);
+	}
+	else if (pthread_mutex_init(&table->served_mtx, NULL))
+	{
+		pthread_mutex_destroy(&table->ended_mtx);
+		pthread_mutex_destroy(&table->write_mtx);
+		pthread_mutex_destroy(&table->full_mtx);
 		return (false);
 	}
 	return (true);
@@ -116,6 +119,10 @@ bool	init_data(t_table *table)
 	if (!init_philos(table))
 		return (false);
 	if (!init_mtx(table))
+	{
+		free_mtx(table->seats, table, 'a');
+		free_data(table);
 		return (false);
+	}
 	return (true);
 }
