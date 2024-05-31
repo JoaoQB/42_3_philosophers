@@ -6,7 +6,7 @@
 /*   By: jqueijo- <jqueijo-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/24 12:00:03 by jqueijo-          #+#    #+#             */
-/*   Updated: 2024/05/30 19:01:30 by jqueijo-         ###   ########.fr       */
+/*   Updated: 2024/05/31 12:54:48 by jqueijo-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,13 +14,16 @@
 
 bool	is_full(t_philo *philo)
 {
-	if (!get_bool(&philo->philo_mtx, &philo->full))
+	if (!get_bool(&philo->table->full_mtx, &philo->full))
 	{
+		pthread_mutex_lock(&philo->philo_mtx);
 		if (philo->meals_eaten > 0 && philo->meals_eaten == philo->meals_limit)
 		{
-			set_bool(&philo->philo_mtx, &philo->full, true);
+			set_bool(&philo->table->full_mtx, &philo->full, true);
+			pthread_mutex_unlock(&philo->philo_mtx);
 			return (true);
 		}
+		pthread_mutex_unlock(&philo->philo_mtx);
 		return (false);
 	}
 	else
@@ -29,7 +32,7 @@ bool	is_full(t_philo *philo)
 
 static void	end_sim(t_table *table, int i)
 {
-	print_status(table->phil + i, RD"has died"RST);
+	print_status(table->phil + i, RD"died"RST);
 	set_bool(&table->ended_mtx, &table->ended, true);
 }
 
@@ -42,6 +45,11 @@ static bool	philo_died(t_philo *philo)
 		|| get_bool(&philo->table->ended_mtx, &philo->table->ended))
 		return (false);
 	pthread_mutex_lock(&philo->philo_mtx);
+	if (philo->last_meal_time == 0)
+	{
+		pthread_mutex_unlock(&philo->philo_mtx);
+		return (false);
+	}
 	elapsed = get_time() - philo->last_meal_time;
 	time_to_die = philo->table->time_to_die;
 	pthread_mutex_unlock(&philo->philo_mtx);

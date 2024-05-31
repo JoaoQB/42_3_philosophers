@@ -1,6 +1,7 @@
-/.vscode
+/philo/.vscode
 a.out
-philo
 *.o
 /LazyPhilosophersTester
 /V2/LazyPhilosophersTester
+/testers/
+/.vscode

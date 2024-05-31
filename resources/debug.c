@@ -6,7 +6,7 @@
 /*   By: jqueijo- <jqueijo-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/24 10:01:21 by jqueijo-          #+#    #+#             */
-/*   Updated: 2024/05/30 15:50:15 by jqueijo-         ###   ########.fr       */
+/*   Updated: 2024/05/31 12:07:55 by jqueijo-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -60,7 +60,7 @@ struct s_table
 	pthread_t	monitor;
 	t_mtx		ended_mtx;
 	t_mtx		write_mtx;
-	t_mtx		monitor_mtx;
+	t_mtx		full_mtx;
 	int			seats;
 	int			time_to_die;
 	int			time_to_eat;
@@ -101,6 +101,7 @@ void	*one_philo(void *data);
 
 /* monitor.c */
 void	*monitor_philos(void *data);
+bool	is_full(t_philo *philo);
 
 #endif
 
@@ -144,7 +145,7 @@ void	cleanup(t_table *table)
 	free_mtx(table->seats, table, 'a');
 	pthread_mutex_destroy(&table->ended_mtx);
 	pthread_mutex_destroy(&table->write_mtx);
-	pthread_mutex_destroy(&table->monitor_mtx);
+	pthread_mutex_destroy(&table->full_mtx);
 	if (table->phil)
 		free (table->phil);
 	if (table->forks)
@@ -182,7 +183,7 @@ static bool	init_mtx(t_table *table)
 		free_data(table);
 		return (false);
 	}
-	else if (pthread_mutex_init(&table->monitor_mtx, NULL))
+	else if (pthread_mutex_init(&table->full_mtx, NULL))
 	{
 		free_mtx(table->seats, table, 'a');
 		pthread_mutex_destroy(&table->ended_mtx);
@@ -320,7 +321,7 @@ bool	init_dinner(t_table *table)
 		return (false);
 	else if (table->seats == 1)
 	{
-		if(!handle_one_philo(table))
+		if (!handle_one_philo(table))
 			return (false);
 	}
 	else
@@ -334,52 +335,52 @@ bool	init_dinner(t_table *table)
 }
 
 /* monitor.c */
+bool	is_full(t_philo *philo)
+{
+	if (!get_bool(&philo->table->full_mtx, &philo->full))
+	{
+		pthread_mutex_lock(&philo->philo_mtx);
+		if (philo->meals_eaten > 0 && philo->meals_eaten == philo->meals_limit)
+		{
+			set_bool(&philo->table->full_mtx, &philo->full, true);
+			pthread_mutex_unlock(&philo->philo_mtx);
+			return (true);
+		}
+		pthread_mutex_unlock(&philo->philo_mtx);
+		return (false);
+	}
+	else
+		return (true);
+}
+
+static void	end_sim(t_table *table, int i)
+{
+	print_status(table->phil + i, RD"died"RST);
+	set_bool(&table->ended_mtx, &table->ended, true);
+}
+
 static bool	philo_died(t_philo *philo)
 {
 	long	elapsed;
 	long	time_to_die;
 
-	if (get_bool(&philo->philo_mtx, &philo->full))
+	if (get_bool(&philo->table->full_mtx, &philo->full)
+		|| get_bool(&philo->table->ended_mtx, &philo->table->ended))
 		return (false);
 	pthread_mutex_lock(&philo->philo_mtx);
 	elapsed = get_time() - philo->last_meal_time;
 	time_to_die = philo->table->time_to_die;
 	pthread_mutex_unlock(&philo->philo_mtx);
-	if (elapsed >= time_to_die)
+	if (elapsed > time_to_die)
 		return (true);
-	return (false);
-}
-
-static bool	check_philos(t_table *table, int *served)
-{
-	int	i;
-
-	i = -1;
-	while (++i < table->seats)
-	{
-		if (philo_died(table->phil + i))
-		{
-			print_status(table->phil + i, RD"has died"RST);
-			set_bool(&table->ended_mtx, &table->ended, true);
-			return (true);
-		}
-		else if (get_bool(&table->phil[i].philo_mtx, &table->phil[i].full))
-		{
-			(*served)++;
-			if (*served == table->seats)
-			{
-				set_bool(&table->ended_mtx, &table->ended, true);
-				return (true);
-			}
-		}
-	}
 	return (false);
 }
 
 void	*monitor_philos(void *data)
 {
-	t_table	*table;
+	int		i;
 	int		served;
+	t_table	*table;
 
 	served = 0;
 	table = (t_table *)data;
@@ -387,8 +388,19 @@ void	*monitor_philos(void *data)
 	{
 		if (get_bool(&table->ended_mtx, &table->ended))
 			return (NULL);
-		if (check_philos(table, &served))
-			return (NULL);
+		i = -1;
+		while (++i < table->seats)
+		{
+			if (is_full(&table->phil[i]))
+				served++;
+			if (served == table->seats)
+				return (NULL);
+			if (philo_died(table->phil + i))
+			{
+				end_sim(table, i);
+				return (NULL);
+			}
+		}
 	}
 	return (NULL);
 }
@@ -449,16 +461,19 @@ void	*one_philo(void *data)
 	}
 	return (NULL);
 }
+
 static void	think(t_philo *philo)
 {
 	long	last_ate_elapsed;
 	long	time_to_think;
 
+	if (get_bool(&philo->table->ended_mtx, &philo->table->ended))
+		return ;
+	print_status(philo, "is thinking");
 	last_ate_elapsed = get_time() - philo->last_meal_time;
 	time_to_think = last_ate_elapsed / 2;
 	if (time_to_think + last_ate_elapsed > philo->table->time_to_die)
 		time_to_think = 1;
-	print_status(philo, "is thinking");
 	ft_sleep(time_to_think, philo->table);
 }
 
@@ -472,22 +487,17 @@ static void	rest(t_philo *philo)
 
 static void	eat(t_philo *philo)
 {
-	if (philo->meals_eaten > 0 && philo->meals_eaten == philo->meals_limit)
-	{
-		set_bool(&philo->philo_mtx, &philo->full, true);
-		return ;
-	}
 	if (get_bool(&philo->table->ended_mtx, &philo->table->ended))
 		return ;
 	pthread_mutex_lock(&philo->left_fork->mtx);
-	print_status(philo, "has taken the first fork");
+	print_status(philo, "has taken a fork");
 	if (get_bool(&philo->table->ended_mtx, &philo->table->ended))
 	{
 		pthread_mutex_unlock(&philo->left_fork->mtx);
 		return ;
 	}
 	pthread_mutex_lock(&philo->right_fork->mtx);
-	print_status(philo, "has taken the second fork");
+	print_status(philo, "has taken a fork");
 	pthread_mutex_lock(&philo->philo_mtx);
 	philo->meals_eaten++;
 	philo->last_meal_time = get_time();
@@ -508,7 +518,7 @@ void	*routine(void *data)
 	pthread_mutex_unlock(&philo->philo_mtx);
 	while (1)
 	{
-		if (get_bool(&philo->philo_mtx, &philo->full))
+		if (is_full(philo))
 			break ;
 		if (get_bool(&philo->table->ended_mtx, &philo->table->ended))
 			break ;
@@ -574,16 +584,17 @@ void	ft_sleep(long usecs, t_table *table)
 
 void	print_status(t_philo *philo, char *status)
 {
-	long	elapsed;
+	long	tstamp;
 
-	elapsed = get_time() - philo->table->start_time;
-	if (get_bool(&philo->table->ended_mtx, &philo->table->ended))
-		return ;
-	if (pthread_mutex_lock(&philo->table->write_mtx))
-		write(2, "print failed", 13);
-	printf(WHT"%ld"RST BL" %d"RST" %s\n", elapsed, philo->index, status);
-	pthread_mutex_unlock(&philo->table->write_mtx);
+	if (!get_bool(&philo->table->ended_mtx, &philo->table->ended))
+	{
+		tstamp = get_time() - philo->table->start_time;
+		pthread_mutex_lock(&philo->table->write_mtx);
+		printf(WHT"%ld"RST BL" %d "RST"%s\n", tstamp, philo->index, status);
+		pthread_mutex_unlock(&philo->table->write_mtx);
+	}
 }
+
 
 void	set_bool(t_mtx *mtx, bool *dest, bool value)
 {
@@ -646,6 +657,7 @@ static void	print_error(char c)
 	{
 		printf(RD"Please only use digits;\n"RST);
 		printf(RD"Values must be > 60 and < INT_MAX\n"RST);
+		printf(RD"Minimum 1 philo\n"RST);
 	}
 	return ;
 }
@@ -668,7 +680,6 @@ int	main(int argc, char **argv)
 		}
 		if (!init_data(&table))
 			return (2);
-		// print_args(&table);
 		if (!init_dinner(&table))
 			return (3);
 		cleanup(&table);

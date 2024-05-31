@@ -6,7 +6,7 @@
 /*   By: jqueijo- <jqueijo-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/23 18:23:27 by jqueijo-          #+#    #+#             */
-/*   Updated: 2024/05/24 11:30:22 by jqueijo-         ###   ########.fr       */
+/*   Updated: 2024/05/30 19:22:36 by jqueijo-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -51,7 +51,7 @@ void	cleanup(t_table *table)
 	free_mtx(table->seats, table, 'a');
 	pthread_mutex_destroy(&table->ended_mtx);
 	pthread_mutex_destroy(&table->write_mtx);
-	pthread_mutex_destroy(&table->monitor_mtx);
+	pthread_mutex_destroy(&table->full_mtx);
 	if (table->phil)
 		free (table->phil);
 	if (table->forks)

@@ -6,7 +6,7 @@
 /*   By: jqueijo- <jqueijo-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/24 11:39:41 by jqueijo-          #+#    #+#             */
-/*   Updated: 2024/05/30 15:47:34 by jqueijo-         ###   ########.fr       */
+/*   Updated: 2024/05/31 13:02:49 by jqueijo-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,7 @@ void	ft_sleep(long usecs, t_table *table)
 	long	start;
 
 	start = get_time();
-	if (usecs < 10)
+	if (usecs <= 10)
 	{
 		usleep(usecs);
 		return ;
@@ -33,15 +33,15 @@ void	ft_sleep(long usecs, t_table *table)
 
 void	print_status(t_philo *philo, char *status)
 {
-	long	elapsed;
+	long	tstamp;
 
-	elapsed = get_time() - philo->table->start_time;
-	if (get_bool(&philo->table->ended_mtx, &philo->table->ended))
-		return ;
-	if (pthread_mutex_lock(&philo->table->write_mtx))
-		write(2, "print failed", 13);
-	printf(WHT"%ld"RST BL" %d"RST" %s\n", elapsed, philo->index, status);
-	pthread_mutex_unlock(&philo->table->write_mtx);
+	if (!get_bool(&philo->table->ended_mtx, &philo->table->ended))
+	{
+		tstamp = get_time() - philo->table->start_time;
+		pthread_mutex_lock(&philo->table->write_mtx);
+		printf(WHT"%ld"RST BL" %d "RST"%s\n", tstamp, philo->index, status);
+		pthread_mutex_unlock(&philo->table->write_mtx);
+	}
 }
 
 void	set_bool(t_mtx *mtx, bool *dest, bool value)
