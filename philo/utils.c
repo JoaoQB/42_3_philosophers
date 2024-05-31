@@ -6,7 +6,7 @@
 /*   By: jqueijo- <jqueijo-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/24 11:39:41 by jqueijo-          #+#    #+#             */
-/*   Updated: 2024/05/31 13:09:26 by jqueijo-         ###   ########.fr       */
+/*   Updated: 2024/05/31 15:51:02 by jqueijo-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -31,17 +31,32 @@ void	ft_sleep(long usecs, t_table *table)
 	return ;
 }
 
+// void	print_status(t_philo *philo, char *status)
+// {
+// 	long	tstamp;
+
+// 	if (!get_bool(&philo->table->ended_mtx, &philo->table->ended))
+// 	{
+// 		tstamp = get_time() - philo->table->start_time;
+// 		pthread_mutex_lock(&philo->table->write_mtx);
+// 		printf(WHT"%ld"RST BL" %d "RST"%s\n", tstamp, philo->index, status);
+// 		pthread_mutex_unlock(&philo->table->write_mtx);
+// 	}
+// }
+
 void	print_status(t_philo *philo, char *status)
 {
 	long	tstamp;
 
-	if (!get_bool(&philo->table->ended_mtx, &philo->table->ended))
+	pthread_mutex_lock(&philo->table->ended_mtx);
+	if (!philo->table->ended)
 	{
 		tstamp = get_time() - philo->table->start_time;
 		pthread_mutex_lock(&philo->table->write_mtx);
 		printf(WHT"%ld"RST BL" %d "RST"%s\n", tstamp, philo->index, status);
 		pthread_mutex_unlock(&philo->table->write_mtx);
 	}
+	pthread_mutex_unlock(&philo->table->ended_mtx);
 }
 
 void	set_bool(t_mtx *mtx, bool *dest, bool value)

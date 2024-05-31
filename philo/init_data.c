@@ -6,7 +6,7 @@
 /*   By: jqueijo- <jqueijo-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/23 17:56:19 by jqueijo-          #+#    #+#             */
-/*   Updated: 2024/05/31 12:44:57 by jqueijo-         ###   ########.fr       */
+/*   Updated: 2024/05/31 16:23:42 by jqueijo-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -101,6 +101,7 @@ static bool	init_forks(t_table *table)
 bool	init_data(t_table *table)
 {
 	table->ended = false;
+	table->served = 0;
 	table->phil = malloc(sizeof(t_philo) * table->seats);
 	if (!table->phil)
 		return (false);

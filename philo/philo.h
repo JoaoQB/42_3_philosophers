@@ -6,7 +6,7 @@
 /*   By: jqueijo- <jqueijo-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/23 11:36:01 by jqueijo-          #+#    #+#             */
-/*   Updated: 2024/05/31 15:15:37 by jqueijo-         ###   ########.fr       */
+/*   Updated: 2024/05/31 16:23:18 by jqueijo-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -61,6 +61,7 @@ struct s_table
 	t_mtx		write_mtx;
 	t_mtx		full_mtx;
 	int			seats;
+	int			served;
 	long		time_to_die;
 	long		time_to_eat;
 	long		time_to_sleep;

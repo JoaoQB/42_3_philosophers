@@ -6,7 +6,7 @@
 /*   By: jqueijo- <jqueijo-@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/05/24 12:00:03 by jqueijo-          #+#    #+#             */
-/*   Updated: 2024/05/31 12:54:48 by jqueijo-         ###   ########.fr       */
+/*   Updated: 2024/05/31 16:26:59 by jqueijo-         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,8 +32,17 @@ bool	is_full(t_philo *philo)
 
 static void	end_sim(t_table *table, int i)
 {
-	print_status(table->phil + i, RD"died"RST);
-	set_bool(&table->ended_mtx, &table->ended, true);
+	long	tstamp;
+
+	pthread_mutex_lock(&table->ended_mtx);
+	pthread_mutex_lock(&table->write_mtx);
+	tstamp = get_time() - table->start_time;
+	printf(WHT"%ld"RST BL" %d "RST"%s\n", tstamp, table->phil[i].index, RD"died"RST);
+	table->ended = true;
+	pthread_mutex_unlock(&table->write_mtx);
+	pthread_mutex_unlock(&table->ended_mtx);
+	// print_status(table->phil + i, RD"died"RST);
+	// set_bool(&table->ended_mtx, &table->ended, true);
 }
 
 static bool	philo_died(t_philo *philo)
@@ -76,7 +85,11 @@ void	*monitor_philos(void *data)
 			if (is_full(&table->phil[i]))
 				served++;
 			if (served == table->seats)
+			{
+				printf("served %d, seats %d\n", served, table->seats);
+				set_bool(&table->ended_mtx, &table->ended, true);
 				return (NULL);
+			}
 			if (philo_died(table->phil + i))
 			{
 				end_sim(table, i);
