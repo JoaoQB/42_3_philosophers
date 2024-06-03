@@ -10,11 +10,14 @@ https://medium.com/@jalal92/deadlocks-b059eed3e6c3 | DONE
 https://medium.com/@jalal92/the-dining-philosophers-7157cc05315 | DONE
 	Oceano The Dining Philosophers
 
-https://gitlab.com/fpietro.lw/philosophers/-/blob/main/src/dinner.c?ref_type=heads
+https://gitlab.com/fpietro.lw/philosophers/-/blob/main/src/dinner.c?ref_type=heads | DONE
 	fmour gitlab
 
-https://nafuka11.github.io/philosophers-visualizer/
+https://nafuka11.github.io/philosophers-visualizer/ | DONE
 	Philosophers visualizer
+
+https://git.chevro.fr/42-cestoliv/philosophers/-/blob/main/philo/TESTS.md
+	Test cases!!!
 
 https://www.youtube.com/watch?v=_ruovgwXyYs
 	 Deadlock 3: Dining Philosophers
