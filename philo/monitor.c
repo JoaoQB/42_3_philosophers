@@ -48,11 +48,13 @@ bool	is_full(t_philo *philo)
 static void	end_sim(t_table *table, int i)
 {
 	long	tstamp;
+	t_philo	*philo;
 
+	philo = table->phil;
 	pthread_mutex_lock(&table->ended_mtx);
 	pthread_mutex_lock(&table->write_mtx);
 	tstamp = get_time() - table->start_time;
-	printf(WHT"%ld"RST BL" %d "RST"%s\n", tstamp, table->phil[i].index, RD"died"RST);
+	printf(WHT"%ld"RST BL" %d "RST"%s\n", tstamp, philo[i].index, RD"died"RST);
 	table->ended = true;
 	pthread_mutex_unlock(&table->write_mtx);
 	pthread_mutex_unlock(&table->ended_mtx);
